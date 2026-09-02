@@ -1,4 +1,5 @@
 import time
+import numpy as np
 import pandas as pd
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
@@ -15,6 +16,7 @@ STATE={}
 class OptimizeRequest(BaseModel):
     cases:int=Field(5000,ge=100,le=50000); seed:int=2026; contacts:int=1000; incentive_budget_inr:float=25000
 
+def clean(df): return df.replace({np.nan:None}).to_dict("records")
 def run_engine(req):
     train=generate_dataset(max(20000,req.cases),req.seed+1); test=generate_dataset(req.cases,req.seed+2,shift=True)
     for d in (train,test): d["eligible_actions"]=d.apply(eligible_actions_for,axis=1)
@@ -28,7 +30,7 @@ def run_engine(req):
     metrics=[summarize_policy(realize_policy_outcomes(test,a,True),n) for n,a in policies.items()]
     exec_input=allocation.merge(final.rename(columns={"action":"final_action"}),on="case_id",how="left").assign(action=lambda x:x.final_action)
     adapter=SimulatedExecutionAdapter(req.seed+3); audit=AuditLog(); exec_df,_=run_execution(exec_input,test,adapter,audit,decisions,"uplift_tlearner_v2")
-    report={"generated_at":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),"dataset":{"train_cases":len(train),"test_cases":len(test),"distribution_shift":True},"budget_usage":usage,"policies":metrics,"guardrails":{"opted_out":len(opted),"blocked":int((final.action=="NO_ACTION").sum())},"segments":segment_performance(realized).to_dict("records"),"execution":exec_df.exec_status.value_counts().to_dict(),"allocation":allocation.to_dict("records"),"scored":scored.to_dict("records"),"audit":audit.to_df().to_dict("records")}
+    report={"generated_at":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),"dataset":{"train_cases":len(train),"test_cases":len(test),"distribution_shift":True},"budget_usage":usage,"policies":metrics,"guardrails":{"opted_out":len(opted),"blocked":int((final.action=="NO_ACTION").sum())},"segments":segment_performance(realized).to_dict("records"),"execution":exec_df.exec_status.value_counts().to_dict(),"allocation":clean(allocation),"scored":clean(scored),"audit":clean(audit.to_df())}
     STATE.update(report=report,model=model,test=test,scored=scored,allocation=allocation); return report
 @app.get("/api/health")
 def health(): return {"status":"ok","service":"crro","version":app.version}
