@@ -1,47 +1,24 @@
-"""Hidden causal benchmark oracle. Keep this module outside model/runtime logic."""
 import numpy as np
-import pandas as pd
 
+BASE = {"insufficient_funds":-0.65,"bank_decline":-0.35,"network_error":0.15,"risk_block":-0.9,"otp_timeout":-0.1,"card_expired":-1.0}
+METHOD = {"upi":0.25,"card":0.05,"netbanking":0.10,"wallet":0.18}
+ACTION = {"NO_ACTION":0.0,"RETRY_NOW":0.48,"RETRY_LATER":0.34,"PAYMENT_LINK":0.42,"ALTERNATIVE_PAYMENT_METHOD":0.52,"CUSTOMER_NUDGE":0.30,"SMALL_INCENTIVE":0.60}
+SEGMENT = {"ecommerce":0.04,"subscription":0.12,"travel":-0.04,"food_delivery":0.08,"edtech":0.02}
 
-def _sigmoid(x):
-    return 1.0 / (1.0 + np.exp(-x))
+def _sigmoid(x): return 1/(1+np.exp(-np.clip(x,-30,30)))
 
-
-def true_p_recovery(df, action_array, shift=False):
-    latent = df["_latent_trait"].to_numpy() if "_latent_trait" in df else 2 * (df["customer_success_rate"].to_numpy() - 0.5)
-    failure = df["failure_reason"].to_numpy()
-    method = df["payment_method"].to_numpy()
-    amount = df["amount_inr"].to_numpy()
-    attempts = df["attempt_count"].to_numpy()
-    age = df["minutes_since_failure"].to_numpy()
-    action = np.asarray(action_array, dtype=object)
-
-    failure_effect = pd.Series(failure).map({
-        "insufficient_funds": -0.9, "bank_decline": -0.6, "network_error": 0.4,
-        "risk_block": -1.3, "otp_timeout": 0.2, "card_expired": -1.1,
-    }).to_numpy()
-    method_effect = pd.Series(method).map({"upi": 0.3, "card": -0.1, "netbanking": -0.3, "wallet": 0.1}).to_numpy()
-    base = 0.9 * latent + failure_effect + method_effect
-    base += -0.15 * np.abs(age / 60.0 - 6) / 6
-    base += -0.25 * (np.log(amount) - 8.0) - 0.35 * (attempts - 1)
+def true_p_recovery(df, actions, shift=False):
+    actions=np.asarray(actions,dtype=object)
+    reason=df["failure_reason"].map(BASE).to_numpy(); method=df["payment_method"].map(METHOD).to_numpy()
+    amount=np.log1p(df["amount_inr"].to_numpy()); attempts=df["attempt_count"].to_numpy(); minutes=df["minutes_since_failure"].to_numpy()
+    latent=df.get("_latent_trait", np.zeros(len(df))); seg=df.get("merchant_category", "ecommerce")
+    seg=seg.map(SEGMENT).to_numpy() if hasattr(seg,"map") else np.zeros(len(df))+SEGMENT[seg]
+    action_effect=np.array([ACTION.get(a,0) for a in actions]); timing=np.where(minutes<60,.20,np.where(minutes<1440,.05,-.08)); retry_penalty=-.10*np.maximum(attempts-1,0)
+    interaction=np.where((actions=="ALTERNATIVE_PAYMENT_METHOD")&(df.payment_method.to_numpy()=="card"),.22,0)
+    interaction += np.where((actions=="RETRY_NOW")&(df.failure_reason.to_numpy()=="network_error"),.18,0)
+    interaction += np.where((actions=="PAYMENT_LINK")&(df.failure_reason.to_numpy()=="insufficient_funds"),.16,0)
+    interaction += np.where((actions=="CUSTOMER_NUDGE")&(df.merchant_category.to_numpy()=="subscription"),.12,0)
     if shift:
-        base += -0.15
-        base += -0.15 * (np.log(amount) - 8.0)
-    base -= 0.2
-
-    action_main = pd.Series(action).map({
-        "NO_ACTION": 0.0, "RETRY_NOW": 0.35, "RETRY_LATER": 0.55,
-        "PAYMENT_LINK": 0.45, "ALTERNATIVE_PAYMENT_METHOD": 0.5,
-        "CUSTOMER_NUDGE": 0.3, "SMALL_INCENTIVE": 0.8,
-    }).to_numpy()
-    bonus = np.zeros(len(df))
-    bonus += ((failure == "insufficient_funds") & (action == "RETRY_LATER")) * 0.6
-    bonus += ((failure == "risk_block") & (action == "PAYMENT_LINK")) * 0.5
-    bonus += ((failure == "network_error") & (action == "RETRY_NOW")) * 0.7
-    bonus += ((failure == "card_expired") & (action == "ALTERNATIVE_PAYMENT_METHOD")) * 0.9
-    bonus += ((failure == "otp_timeout") & (action == "RETRY_NOW")) * 0.5
-    low = latent < -0.3
-    bonus += low * ((action == "SMALL_INCENTIVE") * 0.9 + (action == "CUSTOMER_NUDGE") * 0.4 + (action == "PAYMENT_LINK") * 0.3)
-    bonus += (latent > 0.6) * (action != "NO_ACTION") * -0.25
-    bonus += ((method == "card") & (action == "ALTERNATIVE_PAYMENT_METHOD")) * 0.6
-    return _sigmoid(base + action_main + bonus)
+        action_effect += np.where(actions=="RETRY_NOW",-.08,0); action_effect += np.where(actions=="ALTERNATIVE_PAYMENT_METHOD",.10,0); reason += np.where(df.failure_reason.to_numpy()=="network_error",.08,0)
+    score=-1.1+reason+method+.25*seg+.85*latent+timing+retry_penalty+action_effect+interaction-.08*np.log1p(amount)
+    return _sigmoid(score)
