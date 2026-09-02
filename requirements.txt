@@ -1,0 +1,10 @@
+numpy>=1.26
+pandas>=2.2
+scikit-learn>=1.5
+ortools>=9.10
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.9
+sqlalchemy>=2.0
+psycopg[binary]>=3.2
+alembic>=1.13
