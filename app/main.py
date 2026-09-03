@@ -121,7 +121,12 @@ def run_engine(req, db):
         )
         approved = d.approved
         if approved:
-            approved, _ = approvals.gate(r.case_id, r.action, float(row.amount_inr))
+            approved, gate_info = approvals.gate(r.case_id, r.action, float(row.amount_inr))
+            if not approved:
+                d.approved = False
+                d.requires_human_approval = True
+                d.reason_code = 'APPROVAL_PENDING'
+                d.message = f"Awaiting merchant approval (approval_id={gate_info['approval_id']})"
         decisions[r.case_id] = d
         final.append({'case_id': r.case_id, 'action': r.action if approved else 'NO_ACTION'})
 
