@@ -14,6 +14,7 @@ from crro.baselines import control_policy,fixed_retry_policy,rule_based_policy,r
 from crro.executor import SimulatedExecutionAdapter,AuditLog,run_execution
 from crro.causal_metrics import evaluate_uplift
 from crro.experiments import multi_seed_benchmark,ablation
+from crro.response_curves import budget_response_curve,action_response_curve
 from .db import get_db,init_db
 from .repository import Repository
 from .approvals import ApprovalService
@@ -23,7 +24,7 @@ from .razorpay import RazorpayTestAdapter,verify_webhook
 from .reconciliation import ReconciliationService
 from .customer_state import CustomerStateService
 from .merchant_policy import MerchantPolicyService
-app=FastAPI(title='CRRO',version='3.0.0',description='Counterfactual Revenue Recovery Optimizer');STATE={}
+app=FastAPI(title='CRRO',version='3.1.0',description='Counterfactual Revenue Recovery Optimizer');STATE={}
 class OptimizeRequest(BaseModel):cases:int=Field(2000,ge=100,le=20000);seed:int=2026;contacts:int|None=None;incentive_budget_inr:float|None=None;merchant_id:str='demo'
 class ApprovalRequest(BaseModel):status:str=Field(pattern='^(APPROVED|REJECTED)$');actor:str='merchant'
 class AnalystRequest(BaseModel):case:dict;allowed_actions:list[str];merchant_id:str='demo'
@@ -58,6 +59,10 @@ def cases(limit:int=50,db:Session=Depends(get_db)):r=STATE.get('report') or run_
 def benchmark(seeds:int=10,cases:int=1500):return multi_seed_benchmark(range(seeds),cases)
 @app.get('/api/benchmark/ablation')
 def benchmark_ablation(seed:int=2026,cases:int=2000):return ablation(seed,cases)
+@app.get('/api/benchmark/budget-response')
+def benchmark_budget(seed:int=2026,cases:int=2000):return {'curve':budget_response_curve(seed,cases).to_dict('records')}
+@app.get('/api/benchmark/action-response')
+def benchmark_action(seed:int=2026,cases:int=2000):return {'curve':action_response_curve(seed,cases).to_dict('records')}
 @app.get('/api/merchant-policy')
 def get_policy(merchant_id:str='demo',db:Session=Depends(get_db)):return MerchantPolicyService(db).as_dict(MerchantPolicyService(db).get(merchant_id))
 @app.put('/api/merchant-policy/{merchant_id}')
