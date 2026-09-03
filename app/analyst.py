@@ -1,6 +1,5 @@
 from pydantic import BaseModel, Field
 from .config import get_settings
-from .action_registry import ALLOWED_ACTIONS if False else None
 
 ALLOWED={'NO_ACTION','RETRY_NOW','RETRY_LATER','PAYMENT_LINK','ALTERNATIVE_PAYMENT_METHOD','CUSTOMER_NUDGE','SMALL_INCENTIVE'}
 class AnalystOutput(BaseModel):
@@ -32,4 +31,4 @@ class RecoveryAnalyst:
         elif reason in {'network_error','otp_timeout'} and 'RETRY_LATER' in allowed: action='RETRY_LATER'
         elif 'RETRY_NOW' in allowed and case.get('attempt_count',1)<2: action='RETRY_NOW'
         else: action=allowed[0]
-        return AnalystOutput(diagnosis=f"Failure reason: {reason or 'unknown'}",recommended_action=action,rationale=['Deterministic fallback used; no LLM claim was required.'],evidence_ids=[e.id for e in evidence[:5]],confidence=0.55)
+        return AnalystOutput(diagnosis=f"Failure reason: {reason or 'unknown'}",recommended_action=action,rationale=['Deterministic fallback used; no LLM claim was required.'],evidence_ids=[e.get('id') for e in evidence[:5] if isinstance(e,dict)],confidence=0.55)
