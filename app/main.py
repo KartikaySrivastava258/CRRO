@@ -32,27 +32,20 @@ class PolicyRequest(BaseModel):max_attempts:int|None=None;contact_budget:int|Non
 def startup():init_db()
 def clean(df):return df.replace({np.nan:None}).to_dict('records')
 def run_engine(req,db):
-    policy=MerchantPolicyService(db).get(req.merchant_id); train=generate_dataset(max(20000,req.cases),req.seed+1);test=generate_dataset(req.cases,req.seed+2,shift=True)
+    policy=MerchantPolicyService(db).get(req.merchant_id);train=generate_dataset(max(20000,req.cases),req.seed+1);test=generate_dataset(req.cases,req.seed+2,shift=True)
     for d in (train,test):d['eligible_actions']=d.apply(eligible_actions_for,axis=1)
-    model=UpliftModel().fit(train);scored=compute_expected_incremental_value(model.score_all_actions(test),test[['case_id','amount_inr']]);scored['customer_id']=scored.case_id.map(test.set_index('case_id').customer_id)
-    scored=scored[scored.action.isin(policy.allowed_actions)]
-    state=CustomerStateService(db)
-    eligible=[]
+    model=UpliftModel().fit(train);scored=compute_expected_incremental_value(model.score_all_actions(test),test[['case_id','amount_inr']]);scored['customer_id']=scored.case_id.map(test.set_index('case_id').customer_id);allowed=set(policy.allowed_actions);scored=scored[scored.action.isin(allowed)]
+    state=CustomerStateService(db);eligible_keys=set()
     for _,r in scored.iterrows():
         ok,_=state.eligible(r.customer_id,r.action,req.merchant_id)
-        if ok:eligible.append(r.case_id+'|'+r.action)
-    scored=scored[scored.apply(lambda r:r.case_id+'|'+r.action in set(eligible),axis=1)]
-    budgets=Budgets(req.contacts if req.contacts is not None else policy.contact_budget,req.incentive_budget_inr if req.incentive_budget_inr is not None else policy.incentive_budget_inr,policy.action_caps)
-    allocation,usage=exact_allocate(scored,budgets);opted=set(test.customer_id.iloc[::33]);decisions={};final=[];indexed=test.set_index('case_id');repo=Repository(db);approvals=ApprovalService(repo)
+        if ok:eligible_keys.add(f'{r.case_id}|{r.action}')
+    scored=scored[scored.apply(lambda r:f'{r.case_id}|{r.action}' in eligible_keys,axis=1)]
+    budgets=Budgets(req.contacts if req.contacts is not None else policy.contact_budget,req.incentive_budget_inr if req.incentive_budget_inr is not None else policy.incentive_budget_inr,policy.action_caps);allocation,usage=exact_allocate(scored,budgets);opted=set(test.customer_id.iloc[::33]);decisions={};final=[];indexed=test.set_index('case_id');repo=Repository(db);approvals=ApprovalService(repo,policy.approval_threshold_inr)
     for _,r in allocation.iterrows():
         row=indexed.loc[r.case_id];repo.upsert_case(row.to_dict());d=evaluate_policy(row,r.action,r.expected_incremental_value_inr,{'attempts_used':int(row.get('attempt_count',0))},opted);approved=d.approved
         if approved:approved,_=approvals.gate(r.case_id,r.action,float(row.amount_inr))
         decisions[r.case_id]=d;final.append({'case_id':r.case_id,'action':r.action if approved else 'NO_ACTION'})
-    final=pd.DataFrame(final);test=add_common_random_numbers(test,req.seed+700);realized=realize_policy_outcomes(test,final,shift=True)
-    policies={'CONTROL':control_policy(test),'FIXED_RETRY':fixed_retry_policy(test),'RULE_BASED':rule_based_policy(test),'RAW_PROBABILITY':raw_probability_policy(scored),'UPLIFT_ONLY':uplift_only_policy(scored),'CRRO':final,'PER_CASE_ORACLE':per_case_optimal_policy(test,scored)};metrics=[summarize_policy(realize_policy_outcomes(test,a,True),n) for n,a in policies.items()]
-    causal=evaluate_uplift(model,scored,test,final);exec_input=allocation.merge(final.rename(columns={'action':'final_action'}),on='case_id',how='left').assign(action=lambda x:x.final_action);adapter=SimulatedExecutionAdapter(req.seed+3);audit=AuditLog();exec_df,_=run_execution(exec_input,test,adapter,audit,decisions,'uplift_tlearner_v2')
-    report={'generated_at':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'dataset':{'train_cases':len(train),'test_cases':len(test),'distribution_shift':True},'budget_usage':usage,'policies':metrics,'causal_metrics':causal,'guardrails':{'opted_out':len(opted),'blocked':int((final.action=='NO_ACTION').sum())},'segments':segment_performance(realized).to_dict('records'),'execution':exec_df.exec_status.value_counts().to_dict(),'allocation':clean(allocation),'scored':clean(scored),'audit':clean(audit.to_df())}
-    STATE.update(report=report,model=model,test=test,scored=scored,allocation=allocation);return report
+    final=pd.DataFrame(final);test=add_common_random_numbers(test,req.seed+700);realized=realize_policy_outcomes(test,final,shift=True);policies={'CONTROL':control_policy(test),'FIXED_RETRY':fixed_retry_policy(test),'RULE_BASED':rule_based_policy(test),'RAW_PROBABILITY':raw_probability_policy(scored),'UPLIFT_ONLY':uplift_only_policy(scored),'CRRO':final,'PER_CASE_ORACLE':per_case_optimal_policy(test,scored)};metrics=[summarize_policy(realize_policy_outcomes(test,a,True),n) for n,a in policies.items()];causal=evaluate_uplift(model,scored,test,final);exec_input=allocation.merge(final.rename(columns={'action':'final_action'}),on='case_id',how='left').assign(action=lambda x:x.final_action);adapter=SimulatedExecutionAdapter(req.seed+3);audit=AuditLog();exec_df,_=run_execution(exec_input,test,adapter,audit,decisions,'uplift_tlearner_v2');report={'generated_at':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'dataset':{'train_cases':len(train),'test_cases':len(test),'distribution_shift':True},'budget_usage':usage,'policies':metrics,'causal_metrics':causal,'guardrails':{'opted_out':len(opted),'blocked':int((final.action=='NO_ACTION').sum())},'segments':segment_performance(realized).to_dict('records'),'execution':exec_df.exec_status.value_counts().to_dict(),'allocation':clean(allocation),'scored':clean(scored),'audit':clean(audit.to_df())};STATE.update(report=report,model=model,test=test,scored=scored,allocation=allocation);return report
 @app.get('/api/health')
 def health(db:Session=Depends(get_db)):return {'status':'ok','service':'crro','version':app.version,'database':db.bind.dialect.name}
 @app.post('/api/optimize')
