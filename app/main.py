@@ -22,19 +22,11 @@ from .reconciliation import ReconciliationService
 
 app=FastAPI(title='CRRO',version='2.0.0',description='Counterfactual Revenue Recovery Optimizer')
 STATE={}
-
-class OptimizeRequest(BaseModel):
-    cases:int=Field(2000,ge=100,le=20000); seed:int=2026; contacts:int=500; incentive_budget_inr:float=25000
-class DecisionRequest(BaseModel):
-    case_id:str; action:str; require_approval:bool=False
-class ApprovalRequest(BaseModel):
-    status:str=Field(pattern='^(APPROVED|REJECTED)$'); actor:str='merchant'
-class AnalystRequest(BaseModel):
-    case:dict; allowed_actions:list[str]; merchant_id:str='demo'
-
+class OptimizeRequest(BaseModel): cases:int=Field(2000,ge=100,le=20000); seed:int=2026; contacts:int=500; incentive_budget_inr:float=25000
+class ApprovalRequest(BaseModel): status:str=Field(pattern='^(APPROVED|REJECTED)$'); actor:str='merchant'
+class AnalystRequest(BaseModel): case:dict; allowed_actions:list[str]; merchant_id:str='demo'
 @app.on_event('startup')
 def startup(): init_db()
-
 def clean(df): return df.replace({np.nan:None}).to_dict('records')
 
 def run_engine(req,db):
@@ -45,10 +37,8 @@ def run_engine(req,db):
     opted=set(test.customer_id.iloc[::33]); decisions={}; final=[]; indexed=test.set_index('case_id'); repo=Repository(db); approvals=ApprovalService(repo)
     for _,r in allocation.iterrows():
         row=indexed.loc[r.case_id]; repo.upsert_case(row.to_dict())
-        d=evaluate_policy(row,r.action,r.expected_incremental_value_inr,{'attempts_used':int(row.get('attempt_count',0))},opted)
-        approved=d.approved
-        if approved:
-            approved,_meta=approvals.gate(r.case_id,r.action,float(row.amount_inr))
+        d=evaluate_policy(row,r.action,r.expected_incremental_value_inr,{'attempts_used':int(row.get('attempt_count',0))},opted); approved=d.approved
+        if approved: approved,_=approvals.gate(r.case_id,r.action,float(row.amount_inr))
         decisions[r.case_id]=d; final.append({'case_id':r.case_id,'action':r.action if approved else 'NO_ACTION'})
     final=pd.DataFrame(final); test=add_common_random_numbers(test); realized=realize_policy_outcomes(test,final,shift=True)
     policies={'CONTROL':control_policy(test),'FIXED_RETRY':fixed_retry_policy(test),'RULE_BASED':rule_based_policy(test),'RAW_PROBABILITY':raw_probability_policy(scored),'UPLIFT_ONLY':uplift_only_policy(scored),'CRRO':final,'PER_CASE_ORACLE':per_case_optimal_policy(test,scored)}
@@ -57,7 +47,6 @@ def run_engine(req,db):
     adapter=SimulatedExecutionAdapter(req.seed+3); audit=AuditLog(); exec_df,_=run_execution(exec_input,test,adapter,audit,decisions,'uplift_tlearner_v2')
     report={'generated_at':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'dataset':{'train_cases':len(train),'test_cases':len(test),'distribution_shift':True},'budget_usage':usage,'policies':metrics,'guardrails':{'opted_out':len(opted),'blocked':int((final.action=='NO_ACTION').sum())},'segments':segment_performance(realized).to_dict('records'),'execution':exec_df.exec_status.value_counts().to_dict(),'allocation':clean(allocation),'scored':clean(scored),'audit':clean(audit.to_df())}
     STATE.update(report=report,model=model,test=test,scored=scored,allocation=allocation); return report
-
 @app.get('/api/health')
 def health(db:Session=Depends(get_db)): return {'status':'ok','service':'crro','version':app.version,'database':db.bind.dialect.name}
 @app.post('/api/optimize')
@@ -65,12 +54,10 @@ def optimize(req:OptimizeRequest,db:Session=Depends(get_db)): return run_engine(
 @app.get('/api/report')
 def report(db:Session=Depends(get_db)): return STATE.get('report') or run_engine(OptimizeRequest(),db)
 @app.get('/api/cases')
-def cases(limit:int=50,db:Session=Depends(get_db)):
-    r=STATE.get('report') or run_engine(OptimizeRequest(),db); return {'cases':r['allocation'][:limit]}
+def cases(limit:int=50,db:Session=Depends(get_db)): r=STATE.get('report') or run_engine(OptimizeRequest(),db); return {'cases':r['allocation'][:limit]}
 @app.post('/api/analyst/analyze')
 def analyst(req:AnalystRequest,db:Session=Depends(get_db)):
-    evidence=[{'id':e.id,'title':e.title,'text':e.text} for e in Repository(db).evidence(req.merchant_id)]
-    return RecoveryAnalyst().analyze(req.case,evidence,req.allowed_actions).model_dump()
+    evidence=[{'id':e.id,'title':e.title,'text':e.text} for e in Repository(db).evidence(req.merchant_id)]; return RecoveryAnalyst().analyze(req.case,evidence,req.allowed_actions).model_dump()
 @app.post('/api/approvals/{approval_id}')
 def decide_approval(approval_id:int,req:ApprovalRequest,db:Session=Depends(get_db)):
     a=Repository(db).decide_approval(approval_id,req.status,req.actor); return {'id':a.id,'status':a.status,'case_id':a.case_id,'action':a.action}
@@ -78,29 +65,23 @@ def decide_approval(approval_id:int,req:ApprovalRequest,db:Session=Depends(get_d
 def approvals(status:str='PENDING',db:Session=Depends(get_db)):
     from sqlalchemy import select
     from .models import Approval
-    rows=db.scalars(select(Approval).where(Approval.status==status).order_by(Approval.id.desc())).all()
-    return {'approvals':[{'id':a.id,'case_id':a.case_id,'action':a.action,'status':a.status,'reason':a.reason} for a in rows]}
+    rows=db.scalars(select(Approval).where(Approval.status==status).order_by(Approval.id.desc())).all(); return {'approvals':[{'id':a.id,'case_id':a.case_id,'action':a.action,'status':a.status,'reason':a.reason} for a in rows]}
 @app.post('/api/evidence')
 def add_evidence(payload:dict,db:Session=Depends(get_db)):
-    return Repository(db).add_evidence(payload.get('merchant_id','demo'),payload['title'],payload['text'],payload.get('metadata')).__dict__
+    e=Repository(db).add_evidence(payload.get('merchant_id','demo'),payload['title'],payload['text'],payload.get('metadata')); return {'id':e.id,'merchant_id':e.merchant_id,'title':e.title}
 @app.get('/api/evidence/search')
-def search_evidence(merchant_id:str,query:str,k:int=5,db:Session=Depends(get_db)):
-    return {'hits':[h.__dict__ for h in EvidenceRetriever(Repository(db)).search(merchant_id,query,k)]}
+def search_evidence(merchant_id:str,query:str,k:int=5,db:Session=Depends(get_db)): return {'hits':[h.__dict__ for h in EvidenceRetriever(Repository(db)).search(merchant_id,query,k)]}
 @app.post('/api/razorpay/payment-link')
 def create_link(payload:dict,db:Session=Depends(get_db)):
-    repo=Repository(db); key=payload.get('idempotency_key') or f"crro-{payload['case_id']}-{payload.get('action','PAYMENT_LINK')}"
-    old=repo.idem(key)
+    repo=Repository(db); key=payload.get('idempotency_key') or f"crro-{payload['case_id']}-PAYMENT_LINK"; old=repo.idem(key)
     if old:return old.response
-    data=RazorpayTestAdapter().create_payment_link(payload,key,payload.get('notify',False)); response={'provider':'razorpay','mode':'test','case_id':payload['case_id'],'payment_link':data}
-    repo.save_idem(key,'PAYMENT_LINK',response); repo.execution(case_id=payload['case_id'],action='PAYMENT_LINK',provider='razorpay',provider_id=data.get('id'),status=data.get('status','created'),amount_inr=float(payload.get('amount_inr',0)),raw_response=data); return response
+    data=RazorpayTestAdapter().create_payment_link(payload,key,payload.get('notify',False)); response={'provider':'razorpay','mode':'test','case_id':payload['case_id'],'payment_link':data}; repo.save_idem(key,'PAYMENT_LINK',response); repo.execution(case_id=payload['case_id'],action='PAYMENT_LINK',provider='razorpay',provider_id=data.get('id'),status=data.get('status','created'),amount_inr=float(payload.get('amount_inr',0)),raw_response=data); return response
 @app.post('/api/webhooks/razorpay')
 async def razorpay_webhook(request:Request,db:Session=Depends(get_db)):
     body=await request.body(); sig=request.headers.get('X-Razorpay-Signature',''); from .config import get_settings
     if not verify_webhook(body,sig,get_settings().razorpay_webhook_secret): raise HTTPException(400,'Invalid webhook signature')
     payload=json.loads(body); event_id=request.headers.get('x-razorpay-event-id') or payload.get('event','')+'-'+str(hash(body)); event=payload.get('event','unknown'); repo=Repository(db); _,created=repo.webhook_once(event_id,event,payload)
     if not created:return {'status':'duplicate_ignored'}
-    if event.startswith('payment_link.'): result=ReconciliationService(repo).handle_payment_link_event(payload)
-    else: result={'status':'stored','event':event}
-    return result
+    return ReconciliationService(repo).handle_payment_link_event(payload) if event.startswith('payment_link.') else {'status':'stored','event':event}
 @app.get('/',response_class=HTMLResponse)
 def home(): return HTMLResponse(open('app/dashboard.html').read())
