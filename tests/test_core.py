@@ -1,4 +1,6 @@
 import pandas as pd
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
 from crro.action_registry import ACTION_REGISTRY
 from crro.data_generator import generate_dataset, eligible_actions_for
@@ -8,6 +10,8 @@ from crro.evaluation import add_common_random_numbers, realize_policy_outcomes
 from crro.baselines import control_policy
 from crro.executor import SimulatedExecutionAdapter
 from crro.oracle import true_p_recovery
+from app.db import Base
+from app.customer_state import CustomerRecoveryState, CustomerStateService
 
 
 def test_control_is_real_baseline():
@@ -67,3 +71,18 @@ def test_shifted_oracle_is_writable_and_returns_probability():
     p = true_p_recovery(d, ["NO_ACTION"] * len(d), shift=True)
     assert len(p) == len(d)
     assert ((p >= 0) & (p <= 1)).all()
+
+
+def test_customer_state_is_merchant_scoped_and_persists_limits():
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine, tables=[CustomerRecoveryState.__table__])
+    with Session(engine) as db:
+        service = CustomerStateService(db)
+        service.record("cust-1", "merchant-a", "CUSTOMER_NUDGE", cooldown_minutes=0)
+        a = service.get("cust-1", "merchant-a")
+        b = service.get("cust-1", "merchant-b")
+        assert a.attempt_count == 1
+        assert b.attempt_count == 0
+        allowed, reason = service.eligible("cust-1", "CUSTOMER_NUDGE", "merchant-a", max_attempts=1, cooldown_minutes=0)
+        assert not allowed
+        assert reason == "MAX_ATTEMPTS"
