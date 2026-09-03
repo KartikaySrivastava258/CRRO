@@ -1,44 +1,79 @@
 # CRRO — Counterfactual Revenue Recovery Optimizer
 
-CRRO is a working end-to-end reference implementation for Razorpay Buildathon 2026 Track 03: **AI Revenue Recovery**.
+CRRO is an end-to-end revenue-recovery decision system for Razorpay Buildathon 2026 Track 03. It estimates **incremental** recovery, allocates scarce intervention capacity across a portfolio, applies deterministic guardrails, persists decisions, executes bounded provider actions, and reconciles outcomes.
 
-## What is different
+## Architecture
 
-Most recovery systems answer: **“Should I retry this failed payment?”**
-CRRO answers: **“Given this entire at-risk portfolio and scarce merchant resources, which intervention creates the most incremental revenue?”**
+`failed payment → context/evidence → counterfactual model → incremental economics → portfolio optimizer → guardrails → approval → provider → webhook reconciliation → audit`
 
-It combines:
-1. RCT-style synthetic payment history with a hidden causal outcome model.
-2. A T-learner counterfactual model estimating recovery probability for every allowed action.
-3. Incremental value economics: uplift × recoverable amount − action/incentive cost.
-4. Portfolio allocation under contact, incentive and action caps.
-5. Deterministic guardrails and human-approval routing.
-6. Idempotent simulated provider execution and an audit trail.
-7. Held-out distribution-shift evaluation against control, fixed retry, rule-based, raw-probability, uplift-only and unconstrained oracle policies.
-8. FastAPI API + browser dashboard + Docker deployment.
+### Implemented layers
 
-## Run locally
+- **Causal ML:** T-learner action-conditioned recovery probabilities and uplift against `NO_ACTION`.
+- **Portfolio optimization:** contact, incentive and action-cap constrained allocation.
+- **Policy:** deterministic eligibility, opt-out, attempt and approval gates. The LLM cannot bypass these controls.
+- **PostgreSQL:** cases, evidence, approvals, idempotency records, executions and webhook events. Alembic migration included.
+- **AI Recovery Analyst:** optional OpenAI structured JSON output with a strict action allowlist and deterministic fallback when no API key exists.
+- **Retrieval:** replaceable `VamanaIndex` interface with a dependency-free graph-search implementation for evidence; ready to swap for a native Vamana/ANN backend.
+- **Razorpay Test Mode:** Payment Link creation through the official REST API using test credentials only; webhook signature verification and reconciliation included.
+- **Idempotency:** persisted request keys prevent duplicate provider actions; webhook events are also deduplicated.
+- **Frontend:** Next.js command center with live optimization, policy benchmark, budget usage, guardrail and allocation views.
+- **CI:** backend tests/demo plus a production Next.js build.
+
+Razorpay Payment Links are a supported API mechanism for collecting payments, and Razorpay documents separate Test/Live modes. CRRO intentionally limits the provider adapter in this build to **Test Mode Payment Links**; it never creates live charges. citeturn0search1turn0search10
+
+## Run with Docker
+
+```bash
+cp .env.example .env
+# optionally set Razorpay TEST credentials and OPENAI_API_KEY
+docker compose up --build
+```
+
+Open `http://localhost:3000` for the frontend and `http://localhost:8000/docs` for the API.
+
+The API automatically runs the Alembic migration against PostgreSQL on startup.
+
+## Local development
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python run_demo.py
+alembic upgrade head
 uvicorn app.main:app --reload
 ```
 
-Open `http://localhost:8000`.
-
-API: `GET /api/health`, `GET /api/report`, `GET /api/cases`, `POST /api/optimize`.
-
-## Run with Docker
+For the frontend:
 
 ```bash
-docker compose up --build
+cd frontend
+npm install
+npm run dev
 ```
 
-## Integrity note
+## Key API endpoints
 
-The benchmark is synthetic. Recovery claims are measured from the controlled benchmark, not real merchant revenue. The execution layer is a safe simulated provider; production Razorpay credentials are not required.
+- `GET /api/health` — service/database health
+- `POST /api/optimize` — run the recovery optimization benchmark
+- `GET /api/report` — latest report
+- `GET /api/cases` — allocated cases
+- `POST /api/analyst/analyze` — guarded AI recovery analysis
+- `GET /api/evidence/search` — evidence retrieval
+- `POST /api/evidence` — add merchant evidence
+- `GET /api/approvals` — pending/decided approvals
+- `POST /api/approvals/{id}` — approve/reject a decision
+- `POST /api/razorpay/payment-link` — create a Razorpay **Test Mode** payment link
+- `POST /api/webhooks/razorpay` — signed webhook ingestion + reconciliation
 
-The LLM is intentionally outside money control: an eventual AI analyst can explain evidence and propose only registry actions, while the model, optimizer, policy engine and execution layer remain typed boundaries.
+## Safety and integrity
+
+- The benchmark remains synthetic; it does not claim real merchant uplift.
+- `NO_ACTION` is a genuine control option.
+- The LLM may diagnose/explain and select only pre-approved action names. It cannot set money amounts, invent offers, execute payments, or report fabricated outcomes.
+- Razorpay credentials are read from environment variables and are never committed.
+- Test Mode must be used for the provider integration. Razorpay documents that Test and Live modes use separate API keys and that Test Mode does not accept real payments. citeturn0search10
+- Payment Link creation uses the documented `/v1/payment_links` API. citeturn0search1
+
+## Production hardening still recommended
+
+Before a real merchant deployment, add secret management, authentication/RBAC, rate limiting, structured observability, queue-based execution, encrypted PII handling, provider retry/backoff, a native high-performance Vamana/ANN implementation, model registry/monitoring, and a formal security review. The current system is **production-shaped and runnable**, but those operational controls should be completed before handling live money.
