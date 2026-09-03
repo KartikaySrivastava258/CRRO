@@ -1,4 +1,4 @@
-import time,json
+import time,json,hashlib
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI,Depends,HTTPException,Request
@@ -86,7 +86,9 @@ def approvals(status:str='PENDING',db:Session=Depends(get_db)):
 def add_evidence(payload:dict,db:Session=Depends(get_db)):
     e=Repository(db).add_evidence(payload.get('merchant_id','demo'),payload['title'],payload['text'],payload.get('metadata'));return {'id':e.id,'merchant_id':e.merchant_id,'title':e.title}
 @app.get('/api/evidence/search')
-def search_evidence(merchant_id:str,query:str,k:int=5,db:Session=Depends(get_db)):return {'hits':[h.__dict__ for h in EvidenceRetriever(Repository(db)).search(merchant_id,query,k)]}
+def search_evidence(merchant_id:str,query:str,k:int=5,db:Session=Depends(get_db)):
+    hits=EvidenceRetriever(Repository(db)).search(merchant_id,query,k)
+    return {'hits':[{'id':h.id,'merchant_id':h.merchant_id,'title':h.title,'text':h.text,'metadata':h.metadata} for h in hits]}
 @app.post('/api/razorpay/payment-link')
 def create_link(payload:dict,db:Session=Depends(get_db)):
     repo=Repository(db);key=payload.get('idempotency_key') or f"crro-{payload['case_id']}-PAYMENT_LINK";old=repo.idem(key)
@@ -96,7 +98,7 @@ def create_link(payload:dict,db:Session=Depends(get_db)):
 async def razorpay_webhook(request:Request,db:Session=Depends(get_db)):
     body=await request.body();sig=request.headers.get('X-Razorpay-Signature','');from .config import get_settings
     if not verify_webhook(body,sig,get_settings().razorpay_webhook_secret):raise HTTPException(400,'Invalid webhook signature')
-    payload=json.loads(body);event_id=request.headers.get('x-razorpay-event-id') or payload.get('event','')+'-'+str(hash(body));event=payload.get('event','unknown');repo=Repository(db);_,created=repo.webhook_once(event_id,event,payload)
+    payload=json.loads(body);event_id=request.headers.get('x-razorpay-event-id') or payload.get('event','')+'-'+hashlib.sha256(body).hexdigest();event=payload.get('event','unknown');repo=Repository(db);_,created=repo.webhook_once(event_id,event,payload)
     if not created:return {'status':'duplicate_ignored'}
     return ReconciliationService(repo).handle_payment_link_event(payload) if event.startswith('payment_link.') else {'status':'stored','event':event}
 @app.get('/',response_class=HTMLResponse)
