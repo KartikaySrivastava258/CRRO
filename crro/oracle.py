@@ -1,24 +1,7 @@
 import numpy as np
-
-BASE = {"insufficient_funds":-0.65,"bank_decline":-0.35,"network_error":0.15,"risk_block":-0.9,"otp_timeout":-0.1,"card_expired":-1.0}
-METHOD = {"upi":0.25,"card":0.05,"netbanking":0.10,"wallet":0.18}
-ACTION = {"NO_ACTION":0.0,"RETRY_NOW":0.48,"RETRY_LATER":0.34,"PAYMENT_LINK":0.42,"ALTERNATIVE_PAYMENT_METHOD":0.52,"CUSTOMER_NUDGE":0.30,"SMALL_INCENTIVE":0.60}
-SEGMENT = {"ecommerce":0.04,"subscription":0.12,"travel":-0.04,"food_delivery":0.08,"edtech":0.02}
-
-def _sigmoid(x): return 1/(1+np.exp(-np.clip(x,-30,30)))
-
-def true_p_recovery(df, actions, shift=False):
-    actions=np.asarray(actions,dtype=object)
-    reason=df["failure_reason"].map(BASE).to_numpy(); method=df["payment_method"].map(METHOD).to_numpy()
-    amount=np.log1p(df["amount_inr"].to_numpy()); attempts=df["attempt_count"].to_numpy(); minutes=df["minutes_since_failure"].to_numpy()
-    latent=df.get("_latent_trait", np.zeros(len(df))); seg=df.get("merchant_category", "ecommerce")
-    seg=seg.map(SEGMENT).to_numpy() if hasattr(seg,"map") else np.zeros(len(df))+SEGMENT[seg]
-    action_effect=np.array([ACTION.get(a,0) for a in actions]); timing=np.where(minutes<60,.20,np.where(minutes<1440,.05,-.08)); retry_penalty=-.10*np.maximum(attempts-1,0)
-    interaction=np.where((actions=="ALTERNATIVE_PAYMENT_METHOD")&(df.payment_method.to_numpy()=="card"),.22,0)
-    interaction += np.where((actions=="RETRY_NOW")&(df.failure_reason.to_numpy()=="network_error"),.18,0)
-    interaction += np.where((actions=="PAYMENT_LINK")&(df.failure_reason.to_numpy()=="insufficient_funds"),.16,0)
-    interaction += np.where((actions=="CUSTOMER_NUDGE")&(df.merchant_category.to_numpy()=="subscription"),.12,0)
-    if shift:
-        action_effect += np.where(actions=="RETRY_NOW",-.08,0); action_effect += np.where(actions=="ALTERNATIVE_PAYMENT_METHOD",.10,0); reason += np.where(df.failure_reason.to_numpy()=="network_error",.08,0)
-    score=-1.1+reason+method+.25*seg+.85*latent+timing+retry_penalty+action_effect+interaction-.08*np.log1p(amount)
-    return _sigmoid(score)
+BASE={"insufficient_funds":-.65,"bank_decline":-.35,"network_error":.15,"risk_block":-.9,"otp_timeout":-.1,"card_expired":-1.0};METHOD={"upi":.25,"card":.05,"netbanking":.10,"wallet":.18};ACTION={"NO_ACTION":0.0,"RETRY_NOW":.48,"RETRY_LATER":.34,"PAYMENT_LINK":.42,"ALTERNATIVE_PAYMENT_METHOD":.52,"CUSTOMER_NUDGE":.30,"SMALL_INCENTIVE":.60};SEGMENT={"ecommerce":.04,"subscription":.12,"travel":-.04,"food_delivery":.08,"edtech":.02}
+def _sigmoid(x):return 1/(1+np.exp(-np.clip(x,-30,30)))
+def true_p_recovery(df,actions,shift=False):
+    actions=np.asarray(actions,dtype=object);reason=df['failure_reason'].map(BASE).to_numpy().copy();method=df['payment_method'].map(METHOD).to_numpy();amount=np.log1p(df['amount_inr'].to_numpy());attempts=df['attempt_count'].to_numpy();minutes=df['minutes_since_failure'].to_numpy();latent=df.get('_latent_trait',np.zeros(len(df)));seg=df.get('merchant_category','ecommerce');seg=seg.map(SEGMENT).to_numpy() if hasattr(seg,'map') else np.zeros(len(df))+SEGMENT[seg];action_effect=np.array([ACTION.get(a,0) for a in actions],dtype=float);timing=np.where(minutes<60,.20,np.where(minutes<1440,.05,-.08));retry_penalty=-.10*np.maximum(attempts-1,0);interaction=np.where((actions=='ALTERNATIVE_PAYMENT_METHOD')&(df.payment_method.to_numpy()=='card'),.22,0);interaction+=np.where((actions=='RETRY_NOW')&(df.failure_reason.to_numpy()=='network_error'),.18,0);interaction+=np.where((actions=='PAYMENT_LINK')&(df.failure_reason.to_numpy()=='insufficient_funds'),.16,0);interaction+=np.where((actions=='CUSTOMER_NUDGE')&(df.merchant_category.to_numpy()=='subscription'),.12,0)
+    if shift:action_effect+=np.where(actions=='RETRY_NOW',-.08,0);action_effect+=np.where(actions=='ALTERNATIVE_PAYMENT_METHOD',.10,0);reason+=np.where(df.failure_reason.to_numpy()=='network_error',.08,0)
+    score=-1.1+reason+method+.25*seg+.85*latent+timing+retry_penalty+action_effect+interaction-.08*np.log1p(amount);return _sigmoid(score)
