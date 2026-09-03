@@ -19,8 +19,6 @@ CRRO is an end-to-end revenue-recovery decision system for Razorpay Buildathon 2
 - **Frontend:** Next.js command center with live optimization, policy benchmark, budget usage, guardrail and allocation views.
 - **CI:** backend tests/demo plus a production Next.js build.
 
-Razorpay Payment Links are a supported API mechanism for collecting payments, and Razorpay documents separate Test/Live modes. CRRO intentionally limits the provider adapter in this build to **Test Mode Payment Links**; it never creates live charges. citeturn0search1turn0search10
-
 ## Run with Docker
 
 ```bash
@@ -71,8 +69,8 @@ npm run dev
 - `NO_ACTION` is a genuine control option.
 - The LLM may diagnose/explain and select only pre-approved action names. It cannot set money amounts, invent offers, execute payments, or report fabricated outcomes.
 - Razorpay credentials are read from environment variables and are never committed.
-- Test Mode must be used for the provider integration. Razorpay documents that Test and Live modes use separate API keys and that Test Mode does not accept real payments. citeturn0search10
-- Payment Link creation uses the documented `/v1/payment_links` API. citeturn0search1
+- Test Mode must be used for the provider integration. Test and Live modes use separate API keys and Test Mode does not accept real payments.
+- Payment Link creation uses the documented `/v1/payment_links` API.
 
 ## Production hardening still recommended
 
