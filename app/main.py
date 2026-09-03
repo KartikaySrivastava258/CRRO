@@ -34,7 +34,7 @@ def clean(df):return df.replace({np.nan:None}).to_dict('records')
 def run_engine(req,db):
     policy=MerchantPolicyService(db).get(req.merchant_id);train=generate_dataset(max(20000,req.cases),req.seed+1);test=generate_dataset(req.cases,req.seed+2,shift=True)
     for d in (train,test):d['eligible_actions']=d.apply(eligible_actions_for,axis=1)
-    model=UpliftModel().fit(train);scored=compute_expected_incremental_value(model.score_all_actions(test),test[['case_id','amount_inr']]);scored['customer_id']=scored.case_id.map(test.set_index('case_id').customer_id);allowed=set(policy.allowed_actions);scored=scored[scored.action.isin(allowed)]
+    model=UpliftModel().fit(train);scored=compute_expected_incremental_value(model.score_all_actions(test),test[['case_id','amount_inr']],incentive_pct=policy.max_incentive_pct);scored['customer_id']=scored.case_id.map(test.set_index('case_id').customer_id);allowed=set(policy.allowed_actions);scored=scored[scored.action.isin(allowed)]
     state=CustomerStateService(db);eligible_keys=set()
     for _,r in scored.iterrows():
         ok,_=state.eligible(r.customer_id,r.action,req.merchant_id)
