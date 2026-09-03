@@ -6,11 +6,7 @@ services:
       POSTGRES_USER: crro
       POSTGRES_PASSWORD: crro
     volumes: [crro_pg:/var/lib/postgresql/data]
-    healthcheck:
-      test: ["CMD-SHELL","pg_isready -U crro -d crro"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+    healthcheck: {test: ["CMD-SHELL","pg_isready -U crro -d crro"],interval: 5s,timeout: 5s,retries: 10}
   api:
     build: .
     environment:
@@ -20,16 +16,11 @@ services:
       RAZORPAY_WEBHOOK_SECRET: ${RAZORPAY_WEBHOOK_SECRET:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5-mini}
-    depends_on:
-      db: {condition: service_healthy}
+    depends_on: {db: {condition: service_healthy}}
     ports: ["8000:8000"]
   frontend:
-    image: node:22-alpine
-    working_dir: /app
-    volumes: [./frontend:/app]
-    environment:
-      BACKEND_URL: http://api:8000
-    command: sh -c "npm install && npm run dev -- --hostname 0.0.0.0"
+    build: ./frontend
+    environment: {BACKEND_URL: http://api:8000}
     depends_on: [api]
     ports: ["3000:3000"]
 volumes:
