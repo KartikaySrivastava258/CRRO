@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
-  CRRO design tokens -- a payments recovery control room, not a generic
-  SaaS card kit. Ledger-grey surfaces, one signal color per meaning
-  (never decorative color): amber = at risk, emerald = recovered,
-  cobalt = the system's own decisions/actions, garnet = blocked/rejected.
+/* CRRO design tokens -- a payments recovery control room, not a generic
+   SaaS card kit. Ledger-grey surfaces, one signal color per meaning
+   (never decorative color): amber = at risk, emerald = recovered,
+   cobalt = the system's own decisions/actions, garnet = blocked/rejected. */
 :root {
   --paper: #f3f4f7;
   --surface: #ffffff;
@@ -48,6 +48,7 @@ body {
   background: var(--action-soft);
 }
 
+* {
   scrollbar-width: thin;
   scrollbar-color: var(--line-strong) transparent;
 }
