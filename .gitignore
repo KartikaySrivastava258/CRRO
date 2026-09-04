@@ -1,6 +1,18 @@
-__pycache__/
-*.pyc
-.venv/
+# Secrets / local configuration
 .env
-outputs/*.json
-outputs/*.csv
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Frontend
+crro-dashboard/node_modules/
+crro-dashboard/dist/
+
+# Local/generated files
+*.log

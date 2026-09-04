@@ -1,28 +1,50 @@
 services:
   db:
-    image: postgres:17-alpine
+    image: postgres:16
     environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: crro_dev_pw
       POSTGRES_DB: crro
-      POSTGRES_USER: crro
-      POSTGRES_PASSWORD: crro
-    volumes: [crro_pg:/var/lib/postgresql/data]
-    healthcheck: {test: ["CMD-SHELL","pg_isready -U crro -d crro"],interval: 5s,timeout: 5s,retries: 10}
+    ports:
+      - "5432:5432"
+    volumes:
+      - crro_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   api:
     build: .
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
-      DATABASE_URL: postgresql+psycopg://crro:crro@db:5432/crro
+      DATABASE_URL: postgresql+psycopg2://postgres:crro_dev_pw@db:5432/crro
+      LLM_PROVIDER: ${LLM_PROVIDER:-auto}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GROQ_MODEL: ${GROQ_MODEL:-openai/gpt-oss-120b}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-sonnet-5}
+      CRRO_PROVIDER: ${CRRO_PROVIDER:-simulator}
       RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-}
       RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:-}
       RAZORPAY_WEBHOOK_SECRET: ${RAZORPAY_WEBHOOK_SECRET:-}
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5-mini}
-    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
-    depends_on: {db: {condition: service_healthy}}
-    ports: ["8000:8000"]
-  frontend:
-    build: ./frontend
-    environment: {BACKEND_URL: http://api:8000}
-    depends_on: [api]
-    ports: ["3000:3000"]
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "alembic upgrade head && uvicorn api:app --host 0.0.0.0 --port 8000"
+
+  dashboard:
+    build:
+      context: ./crro-dashboard
+      args:
+        VITE_API_URL: http://localhost:8000
+    depends_on:
+      - api
+    ports:
+      - "5173:5173"
+
 volumes:
-  crro_pg:
+  crro_pgdata:

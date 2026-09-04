@@ -1,199 +1,263 @@
+"""
+Constrained Portfolio Optimizer v2 (Required Changes Sections 6, 7, 9, 10)
+--------------------------------------------------------------------------
+Two interchangeable allocators behind the same interface:
+
+  greedy_allocate(...)  - fast heuristic (kept for baseline / large N)
+  exact_allocate(...)   - OR-Tools CP-SAT exact/near-exact 0/1 assignment:
+
+      maximize   sum_i sum_a x[i,a] * value[i,a]
+      subject to sum_a x[i,a] <= 1                       for every case i
+                 sum contact_i,a * x[i,a] <= contact_budget
+                 sum incentive_i,a * x[i,a] <= incentive_budget
+                 sum_i x[i,a] <= action_capacity[a]       for capped actions
+                 sum_a x[i,a] <= per_customer_contact_cap  per customer
+                 x[i,a] in {0,1}
+
+Expanded economics (Section 10):
+  expected_incremental_value
+  = incremental_recovery_value
+  - action_cost - contact_cost - incentive_cost - expected_penalty
+
+`expected_penalty` and `expected_customer_friction_cost` are explicitly
+zeroed with a documented reason (Section 10: "do not invent fake
+precision") -- the data model carries the fields so they can be
+populated once a real penalty/friction model exists.
+"""
+
 from dataclasses import dataclass, field
+from typing import Dict, Optional
 import pandas as pd
 from .action_registry import ACTION_REGISTRY
+from .offers import best_eligible_offer, incentive_cost_for_offer
 
 
 @dataclass
 class Budgets:
-    daily_contacts: int = 4000
-    daily_incentive_inr: float = 100000
-    per_action_daily_cap: dict = field(default_factory=lambda: {"ALTERNATIVE_PAYMENT_METHOD": 1000})
-    per_customer_daily_cap: int = 1
+    daily_contacts: int
+    daily_incentive_inr: float
+    per_action_daily_cap: Dict[str, int] = field(default_factory=dict)
+    per_customer_daily_contact_cap: int = 1
 
 
-def _action_spec(action):
-    try:
-        return ACTION_REGISTRY[action]
-    except KeyError as exc:
-        raise ValueError(f"Unknown recovery action: {action}") from exc
+def compute_expected_incremental_value(scored_df, cases_df):
+    """
+    scored_df: case_id, action, estimated_uplift, recovery_probability,
+               baseline_probability
+    cases_df: case_id, amount_inr, customer_id (for offer eligibility)
 
+    Populates separate economic columns per Section 10:
+      action_cost_inr, contact_cost_inr, incentive_cost_inr,
+      expected_penalty_inr, expected_incremental_value_inr
+    """
+    df = scored_df.merge(
+        cases_df[["case_id", "amount_inr", "customer_id"]], on="case_id", how="left"
+    )
 
-def _requires_contact(action):
-    return bool(_action_spec(action).requires_customer_contact)
+    action_cost = df["action"].map(lambda a: ACTION_REGISTRY[a].monetary_cost_inr)
+    requires_contact = df["action"].map(lambda a: ACTION_REGISTRY[a].requires_customer_contact)
+    is_incentive = df["action"].map(lambda a: ACTION_REGISTRY[a].is_incentive)
+    max_incentive_pct = df["action"].map(lambda a: ACTION_REGISTRY[a].max_incentive_pct)
 
+    df["action_cost_inr"] = action_cost
+    df["contact_cost_inr"] = 0.0
 
-def compute_expected_incremental_value(scored_df, case_amounts, incentive_pct=.02):
-    df = scored_df.merge(case_amounts, on="case_id", how="left")
-    if df["amount_inr"].isna().any():
-        raise ValueError("Every scored case must have amount_inr")
-    df["action_cost_inr"] = df["action"].map(lambda a: _action_spec(a).monetary_cost_inr)
+    incentive_cost = []
+    for _, row in df.iterrows():
+        if not is_incentive.loc[row.name]:
+            incentive_cost.append(0.0)
+            continue
+        offer = best_eligible_offer(
+            {"amount_inr": row["amount_inr"]}, max_incentive_pct.loc[row.name]
+        )
+        incentive_cost.append(incentive_cost_for_offer(offer, row["amount_inr"]))
+    df["incentive_cost_inr"] = incentive_cost
+
+    df["expected_penalty_inr"] = 0.0
+    df["expected_customer_friction_cost_inr"] = 0.0
+
     df["recoverable_amount_inr"] = df["amount_inr"]
-    df["incentive_pct"] = df["action"].map(
-        lambda a: min(incentive_pct, _action_spec(a).max_incentive_pct)
-        if _action_spec(a).is_incentive else 0.0
-    )
-    df["incentive_cost_inr"] = df["amount_inr"] * df["incentive_pct"]
-    df["contact_cost_inr"] = df["action"].map(lambda a: 1.0 if _requires_contact(a) else 0.0)
-    df["requires_customer_contact"] = df["action"].map(_requires_contact)
+    df["incremental_recovery_value_inr"] = df["estimated_uplift"] * df["amount_inr"]
     df["expected_incremental_value_inr"] = (
-        df["estimated_uplift"] * df["amount_inr"]
+        df["incremental_recovery_value_inr"]
         - df["action_cost_inr"]
+        - df["contact_cost_inr"]
         - df["incentive_cost_inr"]
+        - df["expected_penalty_inr"]
+        - df["expected_customer_friction_cost_inr"]
     )
+    df["requires_customer_contact"] = requires_contact
     return df
 
 
-def _fallback_greedy(df, budgets):
-    selected = {}
-    contacts = 0
-    incentive = 0.0
-    caps = {a: 0 for a in budgets.per_action_daily_cap}
-    customers = {}
-    ranked = df[df["expected_incremental_value_inr"] > 0].sort_values(
+def _positive_candidates(scored_df):
+    return scored_df[scored_df["expected_incremental_value_inr"] > 0].copy()
+
+
+def greedy_allocate(scored_df, budgets: Budgets):
+    """MVP heuristic allocator (Section 6: kept available as optimizer_mode='greedy')."""
+    df = scored_df.copy()
+    candidates = _positive_candidates(df).sort_values(
         "expected_incremental_value_inr", ascending=False
     )
-    for _, r in ranked.iterrows():
-        case_id = r["case_id"]
-        if case_id in selected:
-            continue
-        action = str(r["action"])
-        customer = str(r.get("customer_id", case_id))
-        needs_contact = _requires_contact(action)
-        incentive_cost = float(r["incentive_cost_inr"])
-        if customers.get(customer, 0) >= budgets.per_customer_daily_cap:
-            continue
-        if needs_contact and contacts >= budgets.daily_contacts:
-            continue
-        if incentive + incentive_cost > budgets.daily_incentive_inr:
-            continue
-        cap = budgets.per_action_daily_cap.get(action)
-        if cap is not None and caps.get(action, 0) >= cap:
-            continue
-        row = r.to_dict()
-        row["requires_customer_contact"] = needs_contact
-        selected[case_id] = row
-        customers[customer] = customers.get(customer, 0) + 1
-        contacts += int(needs_contact)
-        incentive += incentive_cost
-        caps[action] = caps.get(action, 0) + 1
-    return selected, contacts, incentive, caps, "greedy_fallback"
 
-
-def _no_action_row(case_id, reason="NO_POSITIVE_UPLIFT_OR_BUDGET"):
-    return {
-        "case_id": case_id,
-        "action": "NO_ACTION",
-        "estimated_uplift": 0.0,
-        "expected_incremental_value_inr": 0.0,
-        "action_cost_inr": 0.0,
-        "incentive_cost_inr": 0.0,
-        "requires_customer_contact": False,
-        "rejected_reason": reason,
-    }
-
-
-def _finalize_allocation(scored_df, chosen, usage):
-    rows = []
-    for case_id, _group in scored_df.groupby("case_id"):
-        if case_id in chosen:
-            row = dict(chosen[case_id])
-            row["rejected_reason"] = None
-            rows.append(row)
-        else:
-            rows.append(_no_action_row(case_id))
-    return pd.DataFrame(rows), usage
-
-
-def exact_allocate(scored_df, budgets, time_limit_seconds=10):
-    """Exact 0/1 portfolio allocation with CP-SAT; NO_ACTION is implicit."""
-    try:
-        from ortools.sat.python import cp_model
-    except ImportError:
-        selected, contacts, incentive, caps, solver = _fallback_greedy(scored_df, budgets)
-        return _finalize_allocation(scored_df, selected, {
-            "contacts_used": contacts, "contacts_budget": budgets.daily_contacts,
-            "incentive_used_inr": round(incentive, 2),
-            "incentive_budget_inr": budgets.daily_incentive_inr,
-            "action_counts": caps, "solver": solver,
-        })
-
-    df = scored_df.copy().reset_index(drop=True)
-    candidates = df[df["expected_incremental_value_inr"] > 0].copy()
-    if candidates.empty:
-        return _finalize_allocation(df, {}, {
-            "contacts_used": 0, "contacts_budget": budgets.daily_contacts,
-            "incentive_used_inr": 0.0, "incentive_budget_inr": budgets.daily_incentive_inr,
-            "action_counts": {a: 0 for a in budgets.per_action_daily_cap},
-            "solver": "cp-sat", "solver_status": "EMPTY", "objective_inr": 0.0,
-        })
-
-    model = cp_model.CpModel()
-    candidate_indices = list(candidates.index)
-    vars_by_index = {i: model.NewBoolVar(f"allocate_{i}") for i in candidate_indices}
-
-    contact_terms = []
-    incentive_terms = []
-    for i in candidate_indices:
-        row = df.loc[i]
-        contact_terms.append(int(_requires_contact(row["action"])) * vars_by_index[i])
-        incentive_terms.append(int(round(float(row["incentive_cost_inr"]) * 100)) * vars_by_index[i])
-    model.Add(sum(contact_terms) <= int(budgets.daily_contacts))
-    model.Add(sum(incentive_terms) <= int(round(budgets.daily_incentive_inr * 100)))
-
-    for action, cap in budgets.per_action_daily_cap.items():
-        action_vars = [vars_by_index[i] for i in candidate_indices if df.loc[i, "action"] == action]
-        if action_vars:
-            model.Add(sum(action_vars) <= int(cap))
-
-    customer_column = candidates["customer_id"] if "customer_id" in candidates.columns else candidates["case_id"]
-    for _customer, group in candidates.groupby(customer_column, sort=False):
-        model.Add(sum(vars_by_index[i] for i in group.index) <= int(budgets.per_customer_daily_cap))
-
-    coefficients = [int(round(float(df.loc[i, "expected_incremental_value_inr"]) * 100)) for i in candidate_indices]
-    model.Maximize(sum(coeff * vars_by_index[i] for coeff, i in zip(coefficients, candidate_indices)))
-
-    solver = cp_model.CpSolver()
-    solver.parameters.max_time_in_seconds = float(time_limit_seconds)
-    solver.parameters.num_search_workers = 8
-    status = solver.Solve(model)
-
-    if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
-        selected, contacts, incentive, caps, fallback = _fallback_greedy(df, budgets)
-        return _finalize_allocation(df, selected, {
-            "contacts_used": contacts, "contacts_budget": budgets.daily_contacts,
-            "incentive_used_inr": round(incentive, 2),
-            "incentive_budget_inr": budgets.daily_incentive_inr,
-            "action_counts": caps, "solver": fallback, "solver_status": solver.StatusName(status),
-        })
-
-    chosen = {}
+    selected = {}
     contacts_used = 0
     incentive_used = 0.0
-    caps = {a: 0 for a in budgets.per_action_daily_cap}
-    for i in candidate_indices:
-        if solver.Value(vars_by_index[i]):
-            row = df.loc[i].to_dict()
-            row["requires_customer_contact"] = _requires_contact(row["action"])
-            chosen[row["case_id"]] = row
-            contacts_used += int(row["requires_customer_contact"])
-            incentive_used += float(row["incentive_cost_inr"])
-            action = row["action"]
-            caps[action] = caps.get(action, 0) + 1
+    action_counts = {a: 0 for a in budgets.per_action_daily_cap}
+    customer_contacts = {}
 
-    return _finalize_allocation(df, chosen, {
+    for _, row in candidates.iterrows():
+        cid = row["case_id"]
+        if cid in selected:
+            continue
+        cust = row["customer_id"]
+
+        if row["requires_customer_contact"]:
+            if contacts_used >= budgets.daily_contacts:
+                continue
+            if customer_contacts.get(cust, 0) >= budgets.per_customer_daily_contact_cap:
+                continue
+        if incentive_used + row["incentive_cost_inr"] > budgets.daily_incentive_inr:
+            continue
+        cap = budgets.per_action_daily_cap.get(row["action"])
+        if cap is not None and action_counts.get(row["action"], 0) >= cap:
+            continue
+
+        selected[cid] = row.to_dict()
+        if row["requires_customer_contact"]:
+            contacts_used += 1
+            customer_contacts[cust] = customer_contacts.get(cust, 0) + 1
+        incentive_used += row["incentive_cost_inr"]
+        if row["action"] in action_counts:
+            action_counts[row["action"]] += 1
+
+    return _finalize_allocation(df, selected), {
         "contacts_used": contacts_used, "contacts_budget": budgets.daily_contacts,
         "incentive_used_inr": round(incentive_used, 2),
         "incentive_budget_inr": budgets.daily_incentive_inr,
-        "action_counts": caps, "solver": "cp-sat", "solver_status": solver.StatusName(status),
-        "objective_inr": round(solver.ObjectiveValue() / 100, 2),
-    })
+        "solver": "greedy", "status": "HEURISTIC",
+    }
 
 
-def greedy_allocate(scored_df, budgets):
-    selected, contacts, incentive, caps, solver = _fallback_greedy(scored_df, budgets)
-    return _finalize_allocation(scored_df, selected, {
-        "contacts_used": contacts, "contacts_budget": budgets.daily_contacts,
-        "incentive_used_inr": round(incentive, 2),
+def exact_allocate(scored_df, budgets: Budgets, time_limit_seconds=30, max_candidates=250000):
+    """
+    OR-Tools CP-SAT exact 0/1 assignment (Section 6). Falls back to
+    greedy automatically if OR-Tools is unavailable or the candidate
+    set is too large for the time budget, with the fallback clearly
+    reported in the returned usage dict (never silently degrades).
+    """
+    try:
+        from ortools.sat.python import cp_model
+    except ImportError:
+        alloc, usage = greedy_allocate(scored_df, budgets)
+        usage["solver"] = "greedy_fallback_no_ortools"
+        return alloc, usage
+
+    df = scored_df.copy()
+    candidates = _positive_candidates(df).reset_index(drop=True)
+    if len(candidates) == 0:
+        return _finalize_allocation(df, {}), {
+            "contacts_used": 0, "contacts_budget": budgets.daily_contacts,
+            "incentive_used_inr": 0.0, "incentive_budget_inr": budgets.daily_incentive_inr,
+            "solver": "cp_sat", "status": "NO_POSITIVE_CANDIDATES",
+        }
+    if len(candidates) > max_candidates:
+        alloc, usage = greedy_allocate(scored_df, budgets)
+        usage["solver"] = f"greedy_fallback_too_large_{len(candidates)}_candidates"
+        return alloc, usage
+
+    model = cp_model.CpModel()
+    x = {i: model.NewBoolVar(f"x_{i}") for i in candidates.index}
+
+    for case_id, idxs in candidates.groupby("case_id").groups.items():
+        model.Add(sum(x[i] for i in idxs) <= 1)
+
+    contact_idxs = candidates.index[candidates["requires_customer_contact"]]
+    if len(contact_idxs) > 0:
+        model.Add(sum(x[i] for i in contact_idxs) <= budgets.daily_contacts)
+
+    SCALE = 100
+    incentive_terms = [(x[i], int(round(candidates.loc[i, "incentive_cost_inr"] * SCALE)))
+                        for i in candidates.index if candidates.loc[i, "incentive_cost_inr"] > 0]
+    if incentive_terms:
+        model.Add(sum(v * c for v, c in incentive_terms) <= int(round(budgets.daily_incentive_inr * SCALE)))
+
+    for action, cap in budgets.per_action_daily_cap.items():
+        idxs = candidates.index[candidates["action"] == action]
+        if len(idxs) > 0:
+            model.Add(sum(x[i] for i in idxs) <= cap)
+
+    for cust, idxs in candidates.groupby("customer_id").groups.items():
+        contact_sub = [i for i in idxs if candidates.loc[i, "requires_customer_contact"]]
+        if len(contact_sub) > 1:
+            model.Add(sum(x[i] for i in contact_sub) <= budgets.per_customer_daily_contact_cap)
+
+    VALUE_SCALE = 100
+    model.Maximize(sum(
+        x[i] * int(round(candidates.loc[i, "expected_incremental_value_inr"] * VALUE_SCALE))
+        for i in candidates.index
+    ))
+
+    solver = cp_model.CpSolver()
+    solver.parameters.max_time_in_seconds = time_limit_seconds
+    solver.parameters.num_search_workers = 8
+    status = solver.Solve(model)
+
+    status_name = solver.StatusName(status)
+    selected = {}
+    contacts_used = 0
+    incentive_used = 0.0
+    if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+        for i in candidates.index:
+            if solver.Value(x[i]) == 1:
+                row = candidates.loc[i]
+                selected[row["case_id"]] = row.to_dict()
+                if row["requires_customer_contact"]:
+                    contacts_used += 1
+                incentive_used += row["incentive_cost_inr"]
+
+    usage = {
+        "contacts_used": contacts_used, "contacts_budget": budgets.daily_contacts,
+        "incentive_used_inr": round(incentive_used, 2),
         "incentive_budget_inr": budgets.daily_incentive_inr,
-        "action_counts": caps, "solver": solver,
-    })
+        "solver": "cp_sat", "status": status_name,
+        "objective_value_inr": round(solver.ObjectiveValue() / VALUE_SCALE, 2)
+            if status in (cp_model.OPTIMAL, cp_model.FEASIBLE) else None,
+        "best_objective_bound_inr": round(solver.BestObjectiveBound() / VALUE_SCALE, 2)
+            if status in (cp_model.OPTIMAL, cp_model.FEASIBLE) else None,
+        "wall_time_seconds": round(solver.WallTime(), 3),
+    }
+    return _finalize_allocation(df, selected), usage
+
+
+def _finalize_allocation(df, selected):
+    result_rows = []
+    for cid, all_case_rows in df.groupby("case_id"):
+        if cid in selected:
+            r = selected[cid]
+            r["rejected_reason"] = None
+            result_rows.append(r)
+        else:
+            best = all_case_rows.sort_values(
+                "expected_incremental_value_inr", ascending=False
+            ).iloc[0]
+            reason = "NO_POSITIVE_UPLIFT" if best["expected_incremental_value_inr"] <= 0 \
+                else "POLICY_BLOCKED"
+            row = {
+                "case_id": cid, "action": "NO_ACTION",
+                "estimated_uplift": 0.0, "expected_incremental_value_inr": 0.0,
+                "action_cost_inr": 0.0, "contact_cost_inr": 0.0, "incentive_cost_inr": 0.0,
+                "expected_penalty_inr": 0.0, "expected_customer_friction_cost_inr": 0.0,
+                "requires_customer_contact": False,
+                "rejected_reason": reason,
+            }
+            result_rows.append(row)
+    return pd.DataFrame(result_rows)
+
+
+def allocate(scored_df, budgets: Budgets, mode="exact", **kwargs):
+    """Single entry point. mode: 'exact' (default) or 'greedy'."""
+    if mode == "greedy":
+        return greedy_allocate(scored_df, budgets)
+    return exact_allocate(scored_df, budgets, **kwargs)

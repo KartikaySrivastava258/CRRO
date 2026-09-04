@@ -1,15 +1,51 @@
+"""
+Deterministic Policy / Guardrail Engine (Spec Sections 12, 24, 78-79)
+------------------------------------------------------------------------
+This is a pure, deterministic, non-LLM gate. It runs AFTER the optimizer
+selects an action and BEFORE execution. It can downgrade a selection to
+NO_ACTION with a reason code, or route to human approval.
+
+"AI reasons; deterministic systems control money." (Section 84)
+"""
+
 from dataclasses import dataclass
-from .action_registry import ACTION_REGISTRY
+from typing import Optional
+from .action_registry import ACTION_REGISTRY, REASON_CODES
+
+
 @dataclass
 class PolicyDecision:
-    approved:bool; requires_human_approval:bool; reason_code:str|None; message:str
+    approved: bool
+    requires_human_approval: bool
+    reason_code: Optional[str]  # None if approved outright
 
-def evaluate_policy(row,action,expected_incremental_value=0,customer_state=None,opted_out_customers=None):
-    customer_state=customer_state or {}; opted_out_customers=opted_out_customers or set(); spec=ACTION_REGISTRY[action]
-    if action=="NO_ACTION": return PolicyDecision(True,False,None,"No intervention selected")
-    if row.customer_id in opted_out_customers: return PolicyDecision(False,False,"CUSTOMER_OPTED_OUT","Customer has opted out")
-    if int(customer_state.get("attempts_used",0))>=spec.max_attempts: return PolicyDecision(False,False,"MAX_ATTEMPTS","Maximum attempts reached")
-    if expected_incremental_value is not None and expected_incremental_value<=0: return PolicyDecision(False,False,"NO_POSITIVE_UPLIFT","No positive incremental value")
-    threshold=spec.requires_approval_above_amount
-    if threshold is not None and float(row.amount_inr)>threshold: return PolicyDecision(False,True,"APPROVAL_PENDING",f"Merchant approval required above ₹{threshold:,.0f}")
-    return PolicyDecision(True,False,None,"Approved by deterministic policy")
+
+def evaluate_policy(case_row, action_name, expected_incremental_value,
+                     customer_state, opted_out_customers):
+    """
+    customer_state: dict with keys 'attempts_used', 'contacts_used'
+    opted_out_customers: set of customer_ids
+    """
+    spec = ACTION_REGISTRY[action_name]
+
+    if action_name == "NO_ACTION":
+        return PolicyDecision(True, False, None)
+
+    if case_row["customer_id"] in opted_out_customers and spec.requires_customer_contact:
+        return PolicyDecision(False, False, "CUSTOMER_OPTED_OUT")
+
+    if customer_state["attempts_used"] >= spec.max_attempts:
+        return PolicyDecision(False, False, "MAX_ATTEMPTS")
+
+    if expected_incremental_value is not None and expected_incremental_value <= 0:
+        return PolicyDecision(False, False, "NO_POSITIVE_UPLIFT")
+
+    if any(k not in case_row or case_row[k] is None for k in
+           ("amount_inr", "payment_method", "failure_reason")):
+        return PolicyDecision(False, False, "MISSING_DATA")
+
+    if spec.requires_approval_above_amount is not None and \
+            case_row["amount_inr"] > spec.requires_approval_above_amount:
+        return PolicyDecision(True, True, "APPROVAL_PENDING")
+
+    return PolicyDecision(True, False, None)

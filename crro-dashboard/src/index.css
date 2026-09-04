@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+  CRRO design tokens -- a payments recovery control room, not a generic
+  SaaS card kit. Ledger-grey surfaces, one signal color per meaning
+  (never decorative color): amber = at risk, emerald = recovered,
+  cobalt = the system's own decisions/actions, garnet = blocked/rejected.
+:root {
+  --paper: #f3f4f7;
+  --surface: #ffffff;
+  --ink: #10141c;
+  --ink-soft: #4b5361;
+  --muted: #7b8496;
+  --line: #e2e5eb;
+  --line-strong: #cbd0da;
+
+  --risk: #b6650a;
+  --risk-soft: #fbeee0;
+  --recovered: #157a52;
+  --recovered-soft: #e3f5ec;
+  --action: #29508c;
+  --action-soft: #e7edf7;
+  --blocked: #a3273f;
+  --blocked-soft: #fbe8ec;
+  --pending: #7a5c17;
+  --pending-soft: #fbf1dc;
+
+  --mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, "Inter", "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-mono-tab {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--action-soft);
+}
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+}
