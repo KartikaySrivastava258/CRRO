@@ -1,0 +1,848 @@
+{
+ "seed": 102,
+ "policies": {
+  "policies": [
+   {
+    "policy": "CONTROL",
+    "label": "SYNTHETIC_SIMULATION",
+    "n_cases": 10000,
+    "recovery_rate": 0.1722,
+    "gross_recovered_paise": 817285800,
+    "action_cost_paise": 0,
+    "incentive_cost_paise": 0,
+    "net_value_paise": 817285800,
+    "expected_net_value_paise": 799915264.0738889,
+    "actions_taken": 0,
+    "contacts_used": 0,
+    "incentive_exposure_paise": 0,
+    "incremental_recovered_cases": 0,
+    "incremental_gross_paise": 0,
+    "incremental_net_paise": 0,
+    "incremental_expected_net_paise": 0.0,
+    "constrained": true,
+    "feasibility_violations": []
+   },
+   {
+    "policy": "FIXED_RETRY",
+    "label": "SYNTHETIC_SIMULATION",
+    "n_cases": 10000,
+    "recovery_rate": 0.2188,
+    "gross_recovered_paise": 1061383400,
+    "action_cost_paise": 1322000,
+    "incentive_cost_paise": 0,
+    "net_value_paise": 1060061400,
+    "expected_net_value_paise": 1026560620.7646196,
+    "actions_taken": 6610,
+    "contacts_used": 0,
+    "incentive_exposure_paise": 0,
+    "incremental_recovered_cases": 466,
+    "incremental_gross_paise": 244097600,
+    "incremental_net_paise": 242775600,
+    "incremental_expected_net_paise": 226645356.6907307,
+    "constrained": true,
+    "feasibility_violations": []
+   },
+   {
+    "policy": "RULE_BASED",
+    "label": "SYNTHETIC_SIMULATION",
+    "n_cases": 10000,
+    "recovery_rate": 0.2569,
+    "gross_recovered_paise": 1251034500,
+    "action_cost_paise": 1673700,
+    "incentive_cost_paise": 0,
+    "net_value_paise": 1249360800,
+    "expected_net_value_paise": 1201086758.9252424,
+    "actions_taken": 6312,
+    "contacts_used": 1000,
+    "incentive_exposure_paise": 0,
+    "incremental_recovered_cases": 847,
+    "incremental_gross_paise": 433748700,
+    "incremental_net_paise": 432075000,
+    "incremental_expected_net_paise": 401171494.8513535,
+    "constrained": true,
+    "feasibility_violations": []
+   },
+   {
+    "policy": "HISTORICAL_BEST_ACTION",
+    "label": "SYNTHETIC_SIMULATION",
+    "n_cases": 10000,
+    "recovery_rate": 0.2418,
+    "gross_recovered_paise": 1167601400,
+    "action_cost_paise": 2141600,
+    "incentive_cost_paise": 1375462,
+    "net_value_paise": 1164084338,
+    "expected_net_value_paise": 1123801779.0850253,
+    "actions_taken": 7233,
+    "contacts_used": 1000,
+    "incentive_exposure_paise": 4999924,
+    "incremental_recovered_cases": 696,
+    "incremental_gross_paise": 350315600,
+    "incremental_net_paise": 346798538,
+    "incremental_expected_net_paise": 323886515.0111364,
+    "constrained": true,
+    "feasibility_violations": []
+   },
+   {
+    "policy": "RAW_PROBABILITY",
+    "label": "SYNTHETIC_SIMULATION",
+    "n_cases": 10000,
+    "recovery_rate": 0.2545,
+    "gross_recovered_paise": 1296138000,
+    "action_cost_paise": 1949500,
+    "incentive_cost_paise": 2517154,
+    "net_value_paise": 1291671346,
+    "expected_net_value_paise": 1248829208.1254506,
+    "actions_taken": 7150,
+    "contacts_used": 1000,
+    "incentive_exposure_paise": 4998728,
+    "incremental_recovered_cases": 823,
+    "incremental_gross_paise": 478852200,
+    "incremental_net_paise": 474385546,
+    "incremental_expected_net_paise": 448913944.0515617,
+    "constrained": true,
+    "feasibility_violations": []
+   },
+   {
+    "policy": "UPLIFT_GREEDY",
+    "label": "SYNTHETIC_SIMULATION",
+    "n_cases": 10000,
+    "recovery_rate": 0.2562,
+    "gross_recovered_paise": 1308657500,
+    "action_cost_paise": 1934900,
+    "incentive_cost_paise": 2093858,
+    "net_value_paise": 1304628742,
+    "expected_net_value_paise": 1257468595.1319113,
+    "actions_taken": 7082,
+    "contacts_used": 1000,
+    "incentive_exposure_paise": 4999754,
+    "incremental_recovered_cases": 840,
+    "incremental_gross_paise": 491371700,
+    "incremental_net_paise": 487342942,
+    "incremental_expected_net_paise": 457553331.0580224,
+    "constrained": true,
+    "feasibility_violations": []
+   },
+   {
+    "policy": "CRRO_EXACT",
+    "label": "SYNTHETIC_SIMULATION",
+    "n_cases": 10000,
+    "recovery_rate": 0.2597,
+    "gross_recovered_paise": 1315586800,
+    "action_cost_paise": 2063500,
+    "incentive_cost_paise": 1716042,
+    "net_value_paise": 1311807258,
+    "expected_net_value_paise": 1271613650.245387,
+    "actions_taken": 7377,
+    "contacts_used": 1000,
+    "incentive_exposure_paise": 4999998,
+    "incremental_recovered_cases": 875,
+    "incremental_gross_paise": 498301000,
+    "incremental_net_paise": 494521458,
+    "incremental_expected_net_paise": 471698386.1714982,
+    "constrained": true,
+    "feasibility_violations": []
+   },
+   {
+    "policy": "UPLIFT_UNCONSTRAINED (diagnostic)",
+    "label": "SYNTHETIC_SIMULATION",
+    "n_cases": 10000,
+    "recovery_rate": 0.3274,
+    "gross_recovered_paise": 1582037900,
+    "action_cost_paise": 7686200,
+    "incentive_cost_paise": 15174788,
+    "net_value_paise": 1559176912,
+    "expected_net_value_paise": 1511533406.8515437,
+    "actions_taken": 9887,
+    "contacts_used": 7822,
+    "incentive_exposure_paise": 54753564,
+    "incremental_recovered_cases": 1552,
+    "incremental_gross_paise": 764752100,
+    "incremental_net_paise": 741891112,
+    "incremental_expected_net_paise": 711618142.7776548,
+    "constrained": false,
+    "feasibility_violations": null
+   },
+   {
+    "policy": "ORACLE_CONSTRAINED (simulator-only)",
+    "label": "SYNTHETIC_SIMULATION",
+    "n_cases": 10000,
+    "recovery_rate": 0.2674,
+    "gross_recovered_paise": 1386276300,
+    "action_cost_paise": 2020000,
+    "incentive_cost_paise": 1897840,
+    "net_value_paise": 1382358460,
+    "expected_net_value_paise": 1326336697.1678395,
+    "actions_taken": 7195,
+    "contacts_used": 1000,
+    "incentive_exposure_paise": 4999990,
+    "incremental_recovered_cases": 952,
+    "incremental_gross_paise": 568990500,
+    "incremental_net_paise": 565072660,
+    "incremental_expected_net_paise": 526421433.0939506,
+    "constrained": true,
+    "feasibility_violations": []
+   },
+   {
+    "policy": "ORACLE_UNCONSTRAINED (simulator-only)",
+    "label": "SYNTHETIC_SIMULATION",
+    "n_cases": 10000,
+    "recovery_rate": 0.3438,
+    "gross_recovered_paise": 1678238700,
+    "action_cost_paise": 7465700,
+    "incentive_cost_paise": 13212034,
+    "net_value_paise": 1657560966,
+    "expected_net_value_paise": 1590788814.602825,
+    "actions_taken": 9893,
+    "contacts_used": 7634,
+    "incentive_exposure_paise": 48163444,
+    "incremental_recovered_cases": 1716,
+    "incremental_gross_paise": 860952900,
+    "incremental_net_paise": 840275166,
+    "incremental_expected_net_paise": 790873550.528936,
+    "constrained": false,
+    "feasibility_violations": null
+   }
+  ],
+  "solver_usage": {
+   "RAW_PROBABILITY": {
+    "solver": "greedy",
+    "status": "HEURISTIC",
+    "contacts_used": 1000,
+    "contacts_budget": 1000,
+    "incentive_committed_paise": 4998728,
+    "incentive_budget_paise": 5000000,
+    "actions_selected": 7150,
+    "objective_expected_value_paise": 1289704800,
+    "incentive_used_inr": 49987.28,
+    "incentive_budget_inr": 50000.0,
+    "wall_time_ms": 177.11,
+    "candidates": 51662
+   },
+   "UPLIFT_GREEDY": {
+    "solver": "greedy",
+    "status": "HEURISTIC",
+    "contacts_used": 1000,
+    "contacts_budget": 1000,
+    "incentive_committed_paise": 4999754,
+    "incentive_budget_paise": 5000000,
+    "actions_selected": 7082,
+    "objective_expected_value_paise": 446562164,
+    "incentive_used_inr": 49997.54,
+    "incentive_budget_inr": 50000.0,
+    "wall_time_ms": 178.5,
+    "candidates": 49430
+   },
+   "CRRO_EXACT": {
+    "solver": "highs",
+    "status": "OPTIMAL",
+    "contacts_used": 1000,
+    "contacts_budget": 1000,
+    "incentive_committed_paise": 4999998,
+    "incentive_budget_paise": 5000000,
+    "actions_selected": 7377,
+    "objective_expected_value_paise": 466274927,
+    "incentive_used_inr": 49999.98,
+    "incentive_budget_inr": 50000.0,
+    "wall_time_ms": 6208.02,
+    "candidates": 49430,
+    "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+    "dual_bound_paise": 466274927.0,
+    "mip_gap": 0.0
+   },
+   "ORACLE_CONSTRAINED": {
+    "solver": "highs",
+    "status": "OPTIMAL",
+    "contacts_used": 1000,
+    "contacts_budget": 1000,
+    "incentive_committed_paise": 4999990,
+    "incentive_budget_paise": 5000000,
+    "actions_selected": 7195,
+    "objective_expected_value_paise": 526417819,
+    "incentive_used_inr": 49999.9,
+    "incentive_budget_inr": 50000.0,
+    "wall_time_ms": 8505.99,
+    "candidates": 51634,
+    "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+    "dual_bound_paise": 526417819.0,
+    "mip_gap": 0.0
+   }
+  },
+  "crro_no_action_reasons": {
+   "BLOCKED_BY": 2510,
+   "NO_POSITIVE_EXPECTED_VALUE": 7
+  },
+  "crro_blocked_by": {
+   "BLOCKED_BY:CONTACT_BUDGET+INCENTIVE_BUDGET": 1441,
+   "BLOCKED_BY:CONTACT_BUDGET+INCENTIVE_BUDGET+CUSTOMER_CONTACT_CAP": 557,
+   "BLOCKED_BY:CONTACT_BUDGET+ACTION_CAP:ALTERNATIVE_PAYMENT_METHOD": 233,
+   "BLOCKED_BY:CONTACT_BUDGET": 124,
+   "BLOCKED_BY:CONTACT_BUDGET+ACTION_CAP:ALTERNATIVE_PAYMENT_METHOD+CUSTOMER_CONTACT_CAP": 114,
+   "BLOCKED_BY:CONTACT_BUDGET+CUSTOMER_CONTACT_CAP": 41
+  },
+  "binding_constraints": {
+   "contact_budget": {
+    "used": 1000,
+    "limit": 1000,
+    "binding": true
+   },
+   "incentive_budget": {
+    "used_paise": 4999998,
+    "limit_paise": 5000000,
+    "binding": true
+   },
+   "action_caps": {
+    "binding": true
+   },
+   "customer_contact_cap": {
+    "binding": true
+   }
+  },
+  "exact_vs_greedy": {
+   "exact_objective_paise": 466274927,
+   "greedy_objective_paise": 446562164,
+   "exact_status": "OPTIMAL",
+   "exact_solver": "highs",
+   "exact_wall_ms": 6208.02,
+   "greedy_wall_ms": 178.5
+  },
+  "crro_segments": {
+   "failure_reason": [
+    {
+     "segment": "bank_decline",
+     "n": 2186,
+     "recovery_rate": 0.2081427264409881,
+     "control_recovery_rate": 0.15690759377859104,
+     "incremental_net_paise": 62400274,
+     "actions_taken": 1561
+    },
+    {
+     "segment": "card_expired",
+     "n": 1022,
+     "recovery_rate": 0.1634050880626223,
+     "control_recovery_rate": 0.10176125244618395,
+     "incremental_net_paise": 61084000,
+     "actions_taken": 703
+    },
+    {
+     "segment": "insufficient_funds",
+     "n": 3027,
+     "recovery_rate": 0.23951106706309877,
+     "control_recovery_rate": 0.1351172778328378,
+     "incremental_net_paise": 153352870,
+     "actions_taken": 2145
+    },
+    {
+     "segment": "network_error",
+     "n": 1407,
+     "recovery_rate": 0.43923240938166314,
+     "control_recovery_rate": 0.2935323383084577,
+     "incremental_net_paise": 110207392,
+     "actions_taken": 1159
+    },
+    {
+     "segment": "otp_timeout",
+     "n": 1416,
+     "recovery_rate": 0.3594632768361582,
+     "control_recovery_rate": 0.2563559322033898,
+     "incremental_net_paise": 86538522,
+     "actions_taken": 1169
+    },
+    {
+     "segment": "risk_block",
+     "n": 942,
+     "recovery_rate": 0.1305732484076433,
+     "control_recovery_rate": 0.09554140127388536,
+     "incremental_net_paise": 20938400,
+     "actions_taken": 640
+    }
+   ],
+   "payment_method": [
+    {
+     "segment": "card",
+     "n": 2995,
+     "recovery_rate": 0.2310517529215359,
+     "control_recovery_rate": 0.14424040066777963,
+     "incremental_net_paise": 151075570,
+     "actions_taken": 2199
+    },
+    {
+     "segment": "netbanking",
+     "n": 1459,
+     "recovery_rate": 0.18985606579849212,
+     "control_recovery_rate": 0.11240575736806031,
+     "incremental_net_paise": 53000502,
+     "actions_taken": 1046
+    },
+    {
+     "segment": "upi",
+     "n": 4506,
+     "recovery_rate": 0.3071460275188637,
+     "control_recovery_rate": 0.21238348868175766,
+     "incremental_net_paise": 250652044,
+     "actions_taken": 3345
+    },
+    {
+     "segment": "wallet",
+     "n": 1040,
+     "recovery_rate": 0.23461538461538461,
+     "control_recovery_rate": 0.1625,
+     "incremental_net_paise": 39793342,
+     "actions_taken": 787
+    }
+   ],
+   "merchant_category": [
+    {
+     "segment": "ecommerce",
+     "n": 2001,
+     "recovery_rate": 0.271864067966017,
+     "control_recovery_rate": 0.19540229885057472,
+     "incremental_net_paise": 68607116,
+     "actions_taken": 1506
+    },
+    {
+     "segment": "edtech",
+     "n": 2021,
+     "recovery_rate": 0.2642256308758041,
+     "control_recovery_rate": 0.17219198416625434,
+     "incremental_net_paise": 106180194,
+     "actions_taken": 1493
+    },
+    {
+     "segment": "food_delivery",
+     "n": 2044,
+     "recovery_rate": 0.25440313111545987,
+     "control_recovery_rate": 0.15998043052837574,
+     "incremental_net_paise": 118587396,
+     "actions_taken": 1484
+    },
+    {
+     "segment": "subscription",
+     "n": 1969,
+     "recovery_rate": 0.24784154393092941,
+     "control_recovery_rate": 0.16353478923311326,
+     "incremental_net_paise": 101561798,
+     "actions_taken": 1458
+    },
+    {
+     "segment": "travel",
+     "n": 1965,
+     "recovery_rate": 0.2600508905852417,
+     "control_recovery_rate": 0.16997455470737913,
+     "incremental_net_paise": 99584954,
+     "actions_taken": 1436
+    }
+   ],
+   "amount_band": [
+    {
+     "segment": "1k-5k",
+     "n": 5635,
+     "recovery_rate": 0.264773735581189,
+     "control_recovery_rate": 0.18172138420585626,
+     "incremental_net_paise": 129870120,
+     "actions_taken": 3880
+    },
+    {
+     "segment": "5k-20k",
+     "n": 3362,
+     "recovery_rate": 0.24687685901249257,
+     "control_recovery_rate": 0.1505056513979774,
+     "incremental_net_paise": 289504338,
+     "actions_taken": 2748
+    },
+    {
+     "segment": "<1k",
+     "n": 741,
+     "recovery_rate": 0.30364372469635625,
+     "control_recovery_rate": 0.22267206477732793,
+     "incremental_net_paise": 3948000,
+     "actions_taken": 503
+    },
+    {
+     "segment": ">=20k",
+     "n": 262,
+     "recovery_rate": 0.19083969465648856,
+     "control_recovery_rate": 0.10305343511450382,
+     "incremental_net_paise": 71199000,
+     "actions_taken": 246
+    }
+   ]
+  }
+ },
+ "model_quality_shifted": {
+  "evaluated_on": "shifted_holdout",
+  "n_test": 10000,
+  "per_action": [
+   {
+    "action": "ALTERNATIVE_PAYMENT_METHOD",
+    "n": 1436,
+    "brier": 0.16973,
+    "ece": 0.02352,
+    "positive_rate": 0.2827
+   },
+   {
+    "action": "CUSTOMER_NUDGE",
+    "n": 1434,
+    "brier": 0.14127,
+    "ece": 0.03214,
+    "positive_rate": 0.2141
+   },
+   {
+    "action": "NO_ACTION",
+    "n": 1389,
+    "brier": 0.11848,
+    "ece": 0.03117,
+    "positive_rate": 0.1677
+   },
+   {
+    "action": "PAYMENT_LINK",
+    "n": 1480,
+    "brier": 0.14847,
+    "ece": 0.0394,
+    "positive_rate": 0.2196
+   },
+   {
+    "action": "RETRY_LATER",
+    "n": 1429,
+    "brier": 0.1594,
+    "ece": 0.04653,
+    "positive_rate": 0.2547
+   },
+   {
+    "action": "RETRY_NOW",
+    "n": 1434,
+    "brier": 0.15074,
+    "ece": 0.02809,
+    "positive_rate": 0.258
+   },
+   {
+    "action": "SMALL_INCENTIVE",
+    "n": 1398,
+    "brier": 0.18056,
+    "ece": 0.02418,
+    "positive_rate": 0.3212
+   }
+  ],
+  "control_calibration": {
+   "n": 1389,
+   "brier_score": 0.11848,
+   "ece": 0.03117,
+   "positive_rate": 0.1677,
+   "bins": [
+    {
+     "bin": "0.0-0.1",
+     "n": 471,
+     "mean_predicted": 0.0618,
+     "observed_rate": 0.0382
+    },
+    {
+     "bin": "0.1-0.2",
+     "n": 409,
+     "mean_predicted": 0.1457,
+     "observed_rate": 0.1125
+    },
+    {
+     "bin": "0.2-0.3",
+     "n": 208,
+     "mean_predicted": 0.2441,
+     "observed_rate": 0.2067
+    },
+    {
+     "bin": "0.3-0.4",
+     "n": 130,
+     "mean_predicted": 0.3462,
+     "observed_rate": 0.3308
+    },
+    {
+     "bin": "0.4-0.5",
+     "n": 84,
+     "mean_predicted": 0.4454,
+     "observed_rate": 0.4167
+    },
+    {
+     "bin": "0.5-0.6",
+     "n": 38,
+     "mean_predicted": 0.5449,
+     "observed_rate": 0.5526
+    },
+    {
+     "bin": "0.6-0.7",
+     "n": 33,
+     "mean_predicted": 0.6398,
+     "observed_rate": 0.5455
+    },
+    {
+     "bin": "0.7-0.8",
+     "n": 14,
+     "mean_predicted": 0.7387,
+     "observed_rate": 0.5714
+    },
+    {
+     "bin": "0.8-0.9",
+     "n": 2,
+     "mean_predicted": 0.8099,
+     "observed_rate": 0.5
+    }
+   ]
+  },
+  "qini_rct_observed": {
+   "ALTERNATIVE_PAYMENT_METHOD": {
+    "n": 2825,
+    "n_treated": 1436,
+    "n_control": 1389,
+    "qini_coefficient": 12.2204,
+    "observed_uplift_top20pct": 0.17384051972809592
+   },
+   "CUSTOMER_NUDGE": {
+    "n": 2823,
+    "n_treated": 1434,
+    "n_control": 1389,
+    "qini_coefficient": 10.4234,
+    "observed_uplift_top20pct": 0.06351297104721765
+   },
+   "PAYMENT_LINK": {
+    "n": 2869,
+    "n_treated": 1480,
+    "n_control": 1389,
+    "qini_coefficient": 1.4636,
+    "observed_uplift_top20pct": 0.0681368082133528
+   },
+   "RETRY_LATER": {
+    "n": 2818,
+    "n_treated": 1429,
+    "n_control": 1389,
+    "qini_coefficient": 11.1479,
+    "observed_uplift_top20pct": 0.10568410462776656
+   },
+   "RETRY_NOW": {
+    "n": 2823,
+    "n_treated": 1434,
+    "n_control": 1389,
+    "qini_coefficient": 27.0083,
+    "observed_uplift_top20pct": 0.18073845536408556
+   },
+   "SMALL_INCENTIVE": {
+    "n": 2787,
+    "n_treated": 1398,
+    "n_control": 1389,
+    "qini_coefficient": 27.5533,
+    "observed_uplift_top20pct": 0.24829045493252136
+   }
+  },
+  "oracle_uplift_at_k (simulator-only)": {
+   "top_10pct": 0.27123,
+   "top_20pct": 0.24249,
+   "top_50pct": 0.20056,
+   "all": 0.15553
+  },
+  "features": [
+   "amount_inr",
+   "attempt_count",
+   "minutes_since_failure",
+   "customer_success_rate",
+   "customer_previous_recovery_rate",
+   "time_of_day",
+   "payment_method",
+   "failure_reason",
+   "merchant_category"
+  ]
+ },
+ "model_quality_in_distribution": {
+  "per_action": [
+   {
+    "action": "ALTERNATIVE_PAYMENT_METHOD",
+    "n": 1436,
+    "brier": 0.17926,
+    "ece": 0.03686,
+    "positive_rate": 0.3064
+   },
+   {
+    "action": "CUSTOMER_NUDGE",
+    "n": 1434,
+    "brier": 0.14546,
+    "ece": 0.03145,
+    "positive_rate": 0.2287
+   },
+   {
+    "action": "NO_ACTION",
+    "n": 1389,
+    "brier": 0.1244,
+    "ece": 0.01964,
+    "positive_rate": 0.1836
+   },
+   {
+    "action": "PAYMENT_LINK",
+    "n": 1480,
+    "brier": 0.15456,
+    "ece": 0.01986,
+    "positive_rate": 0.2419
+   },
+   {
+    "action": "RETRY_LATER",
+    "n": 1429,
+    "brier": 0.16955,
+    "ece": 0.03534,
+    "positive_rate": 0.2813
+   },
+   {
+    "action": "RETRY_NOW",
+    "n": 1434,
+    "brier": 0.1565,
+    "ece": 0.03474,
+    "positive_rate": 0.2782
+   },
+   {
+    "action": "SMALL_INCENTIVE",
+    "n": 1398,
+    "brier": 0.18541,
+    "ece": 0.01767,
+    "positive_rate": 0.3484
+   }
+  ],
+  "control_calibration": {
+   "n": 1389,
+   "brier_score": 0.1244,
+   "ece": 0.01964,
+   "positive_rate": 0.1836,
+   "bins": [
+    {
+     "bin": "0.0-0.1",
+     "n": 471,
+     "mean_predicted": 0.0618,
+     "observed_rate": 0.0467
+    },
+    {
+     "bin": "0.1-0.2",
+     "n": 409,
+     "mean_predicted": 0.1457,
+     "observed_rate": 0.1271
+    },
+    {
+     "bin": "0.2-0.3",
+     "n": 208,
+     "mean_predicted": 0.2441,
+     "observed_rate": 0.2163
+    },
+    {
+     "bin": "0.3-0.4",
+     "n": 130,
+     "mean_predicted": 0.3462,
+     "observed_rate": 0.3538
+    },
+    {
+     "bin": "0.4-0.5",
+     "n": 84,
+     "mean_predicted": 0.4454,
+     "observed_rate": 0.4405
+    },
+    {
+     "bin": "0.5-0.6",
+     "n": 38,
+     "mean_predicted": 0.5449,
+     "observed_rate": 0.6053
+    },
+    {
+     "bin": "0.6-0.7",
+     "n": 33,
+     "mean_predicted": 0.6398,
+     "observed_rate": 0.6061
+    },
+    {
+     "bin": "0.7-0.8",
+     "n": 14,
+     "mean_predicted": 0.7387,
+     "observed_rate": 0.6429
+    },
+    {
+     "bin": "0.8-0.9",
+     "n": 2,
+     "mean_predicted": 0.8099,
+     "observed_rate": 0.5
+    }
+   ]
+  }
+ },
+ "tlearner_crro_exact": {
+  "incremental_expected_net_paise": 443598596.03592,
+  "incremental_net_paise": 492116518,
+  "fit_s": 17.32
+ },
+ "sensitivity": {
+  "contact_budget": [
+   {
+    "factor": 0.25,
+    "budget": 250,
+    "incremental_expected_net_paise": 409075796.5588497,
+    "contacts_used": 250
+   },
+   {
+    "factor": 0.5,
+    "budget": 500,
+    "incremental_expected_net_paise": 441470846.6102053,
+    "contacts_used": 500
+   },
+   {
+    "factor": 1.0,
+    "budget": 1000,
+    "incremental_expected_net_paise": 471698386.1714982,
+    "contacts_used": 1000
+   },
+   {
+    "factor": 2.0,
+    "budget": 2000,
+    "incremental_expected_net_paise": 493154448.8097819,
+    "contacts_used": 2000
+   },
+   {
+    "factor": 4.0,
+    "budget": 4000,
+    "incremental_expected_net_paise": 498850096.1736773,
+    "contacts_used": 2729
+   }
+  ],
+  "incentive_budget": [
+   {
+    "factor": 0.0,
+    "incremental_expected_net_paise": 442296768.6742662,
+    "incentive_exposure_paise": 0
+   },
+   {
+    "factor": 0.5,
+    "incremental_expected_net_paise": 457317475.72249615,
+    "incentive_exposure_paise": 2499952
+   },
+   {
+    "factor": 1.0,
+    "incremental_expected_net_paise": 471698386.1714982,
+    "incentive_exposure_paise": 4999998
+   },
+   {
+    "factor": 2.0,
+    "incremental_expected_net_paise": 491231793.0053557,
+    "incentive_exposure_paise": 9999868
+   }
+  ],
+  "action_cost_multiplier": [
+   {
+    "multiplier": 1.0,
+    "incremental_expected_net_paise": 471698386.1714982,
+    "actions_taken": 7377
+   },
+   {
+    "multiplier": 5.0,
+    "incremental_expected_net_paise": 463274027.9015595,
+    "actions_taken": 7352
+   },
+   {
+    "multiplier": 20.0,
+    "incremental_expected_net_paise": 431291239.4602417,
+    "actions_taken": 7177
+   }
+  ]
+ },
+ "timings_ms": {
+  "fit": 644.6,
+  "score": 529.4,
+  "prepare_total": 1998.7
+ },
+ "seed_wall_s": 145.6
+}

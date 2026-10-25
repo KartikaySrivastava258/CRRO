@@ -1,0 +1,455 @@
+{
+  "generated_at": "2026-09-04 04:42:13 UTC",
+  "optimizer_mode": "exact",
+  "dataset": {
+    "train_cases": 60000,
+    "val_cases": 10000,
+    "test_cases": 20000,
+    "held_out_test_has_distribution_shift": true
+  },
+  "calibration_control_action_validation_set": {
+    "brier_score": 0.1212,
+    "bins": [
+      {
+        "bin": "0.0-0.1",
+        "n": 514,
+        "mean_predicted": 0.0522,
+        "observed_rate": 0.0623
+      },
+      {
+        "bin": "0.1-0.2",
+        "n": 440,
+        "mean_predicted": 0.1492,
+        "observed_rate": 0.1136
+      },
+      {
+        "bin": "0.2-0.3",
+        "n": 210,
+        "mean_predicted": 0.2483,
+        "observed_rate": 0.2476
+      },
+      {
+        "bin": "0.3-0.4",
+        "n": 117,
+        "mean_predicted": 0.3431,
+        "observed_rate": 0.3419
+      },
+      {
+        "bin": "0.4-0.5",
+        "n": 86,
+        "mean_predicted": 0.449,
+        "observed_rate": 0.5349
+      },
+      {
+        "bin": "0.5-0.6",
+        "n": 25,
+        "mean_predicted": 0.5428,
+        "observed_rate": 0.84
+      },
+      {
+        "bin": "0.6-0.7",
+        "n": 15,
+        "mean_predicted": 0.6579,
+        "observed_rate": 0.7333
+      },
+      {
+        "bin": "0.7-0.8",
+        "n": 9,
+        "mean_predicted": 0.7628,
+        "observed_rate": 0.5556
+      },
+      {
+        "bin": "0.9-1.0",
+        "n": 1,
+        "mean_predicted": 0.9583,
+        "observed_rate": 1.0
+      }
+    ]
+  },
+  "feasibility": {
+    "customers_opted_out": 119,
+    "candidate_case_action_pairs_before_feasibility": 106033,
+    "candidate_case_action_pairs_after_feasibility": 103565
+  },
+  "budget_usage": {
+    "contacts_used": 3658,
+    "contacts_budget": 4000,
+    "incentive_used_inr": 99999.0,
+    "incentive_budget_inr": 100000,
+    "solver": "cp_sat",
+    "status": "OPTIMAL",
+    "objective_value_inr": 12613982.4,
+    "best_objective_bound_inr": 12613982.4,
+    "wall_time_seconds": 12.478
+  },
+  "greedy_vs_exact_optimizer_objective_inr": {
+    "greedy_total_expected_value_inr": 12144932.36,
+    "exact_total_expected_value_inr": 12613982.4,
+    "exact_best_bound_inr": 12613982.4
+  },
+  "guardrails": {
+    "customers_opted_out_in_batch": 119,
+    "actions_blocked_by_defense_in_depth_gate": 0,
+    "note": "Feasibility was already enforced BEFORE optimization (Section 7); this second gate exists because state can change between optimization and execution, and caught 0 cases this run.",
+    "block_reason_breakdown": {}
+  },
+  "execution_reliability": {
+    "exec_status_breakdown": {
+      "EXECUTED": 14789,
+      "NOT_EXECUTED": 4571,
+      "PROVIDER_ERROR": 238,
+      "EXECUTION_TIMEOUT": 161,
+      "APPROVAL_PENDING": 8
+    },
+    "duplicate_action_rate_within_previously_attempted_subset": 1.0,
+    "event_processing_success_rate": 0.9794
+  },
+  "policy_comparison": [
+    {
+      "policy": "CONTROL (no action)",
+      "n_cases": 20000,
+      "recovery_rate": 0.18,
+      "gross_recovered_inr": 17394892.0,
+      "total_action_cost_inr": 0.0,
+      "net_recovered_inr": 17394892.0,
+      "actions_taken": 0,
+      "incremental_recovered_cases": 0,
+      "incremental_recovered_inr": 0.0,
+      "incremental_recovery_rate": 0.0,
+      "incremental_net_value_inr": 0.0
+    },
+    {
+      "policy": "FIXED_RETRY",
+      "n_cases": 20000,
+      "recovery_rate": 0.2262,
+      "gross_recovered_inr": 22164304.0,
+      "total_action_cost_inr": 26570.0,
+      "net_recovered_inr": 22137734.0,
+      "actions_taken": 13285,
+      "incremental_recovered_cases": 925,
+      "incremental_recovered_inr": 4769412.0,
+      "incremental_recovery_rate": 0.0463,
+      "incremental_net_value_inr": 4742842.0
+    },
+    {
+      "policy": "RULE_BASED",
+      "n_cases": 20000,
+      "recovery_rate": 0.2656,
+      "gross_recovered_inr": 26039868.0,
+      "total_action_cost_inr": 37373.0,
+      "net_recovered_inr": 26002495.0,
+      "actions_taken": 13087,
+      "incremental_recovered_cases": 1712,
+      "incremental_recovered_inr": 8644976.0,
+      "incremental_recovery_rate": 0.0856,
+      "incremental_net_value_inr": 8607603.0
+    },
+    {
+      "policy": "HISTORICAL_BEST_ACTION",
+      "n_cases": 20000,
+      "recovery_rate": 0.1894,
+      "gross_recovered_inr": 19016533.0,
+      "total_action_cost_inr": 113595.76,
+      "net_recovered_inr": 18902937.24,
+      "actions_taken": 1434,
+      "incremental_recovered_cases": 188,
+      "incremental_recovered_inr": 1621641.0,
+      "incremental_recovery_rate": 0.0094,
+      "incremental_net_value_inr": 1508045.24
+    },
+    {
+      "policy": "RAW_PROBABILITY_MAXIMIZER (unconstrained, diagnostic only)",
+      "n_cases": 20000,
+      "recovery_rate": 0.3331,
+      "gross_recovered_inr": 31909089.0,
+      "total_action_cost_inr": 1291694.44,
+      "net_recovered_inr": 30617394.56,
+      "actions_taken": 20000,
+      "incremental_recovered_cases": 3062,
+      "incremental_recovered_inr": 14514197.0,
+      "incremental_recovery_rate": 0.1531,
+      "incremental_net_value_inr": 13222502.56
+    },
+    {
+      "policy": "RAW_PROBABILITY_MAXIMIZER (budget-constrained, deployable)",
+      "n_cases": 20000,
+      "recovery_rate": 0.2651,
+      "gross_recovered_inr": 26746623.0,
+      "total_action_cost_inr": 86425.58,
+      "net_recovered_inr": 26660197.42,
+      "actions_taken": 15043,
+      "incremental_recovered_cases": 1702,
+      "incremental_recovered_inr": 9351731.0,
+      "incremental_recovery_rate": 0.0851,
+      "incremental_net_value_inr": 9265305.42
+    },
+    {
+      "policy": "UPLIFT_ONLY_NO_PORTFOLIO_CONSTRAINT (unconstrained, diagnostic only)",
+      "n_cases": 20000,
+      "recovery_rate": 0.3239,
+      "gross_recovered_inr": 31167021.0,
+      "total_action_cost_inr": 802519.94,
+      "net_recovered_inr": 30364501.06,
+      "actions_taken": 19883,
+      "incremental_recovered_cases": 2877,
+      "incremental_recovered_inr": 13772129.0,
+      "incremental_recovery_rate": 0.1439,
+      "incremental_net_value_inr": 12969609.06
+    },
+    {
+      "policy": "CRRO (uplift + portfolio optimizer + guardrails)",
+      "n_cases": 20000,
+      "recovery_rate": 0.2695,
+      "gross_recovered_inr": 27066051.0,
+      "total_action_cost_inr": 85896.34,
+      "net_recovered_inr": 26980154.66,
+      "actions_taken": 15196,
+      "incremental_recovered_cases": 1790,
+      "incremental_recovered_inr": 9671159.0,
+      "incremental_recovery_rate": 0.0895,
+      "incremental_net_value_inr": 9585262.66
+    },
+    {
+      "policy": "ORACLE_UPPER_BOUND (not deployable \u2014 benchmark ceiling)",
+      "n_cases": 20000,
+      "recovery_rate": 0.3538,
+      "gross_recovered_inr": 34207868.0,
+      "total_action_cost_inr": 1133713.74,
+      "net_recovered_inr": 33074154.26,
+      "actions_taken": 20000,
+      "incremental_recovered_cases": 3475,
+      "incremental_recovered_inr": 16812976.0,
+      "incremental_recovery_rate": 0.1738,
+      "incremental_net_value_inr": 15679262.26
+    }
+  ],
+  "historical_action_rates_used_by_baseline_a": {
+    "SMALL_INCENTIVE": 0.3571,
+    "ALTERNATIVE_PAYMENT_METHOD": 0.2841,
+    "RETRY_LATER": 0.2796,
+    "RETRY_NOW": 0.2657,
+    "PAYMENT_LINK": 0.2541,
+    "CUSTOMER_NUDGE": 0.2387
+  },
+  "raw_probability_constrained_budget_usage": {
+    "contacts_used": 3666,
+    "contacts_budget": 4000,
+    "incentive_used_inr": 99999.85,
+    "incentive_budget_inr": 100000,
+    "solver": "greedy",
+    "status": "HEURISTIC"
+  },
+  "crro_segment_performance_by_failure_reason": [
+    {
+      "failure_reason": "bank_decline",
+      "n": 4383,
+      "recovery_rate": 0.2142,
+      "net_value_inr": 4261669.02
+    },
+    {
+      "failure_reason": "card_expired",
+      "n": 2024,
+      "recovery_rate": 0.1961,
+      "net_value_inr": 2207070.24
+    },
+    {
+      "failure_reason": "insufficient_funds",
+      "n": 5909,
+      "recovery_rate": 0.2266,
+      "net_value_inr": 6595114.0
+    },
+    {
+      "failure_reason": "network_error",
+      "n": 2791,
+      "recovery_rate": 0.4629,
+      "net_value_inr": 6613182.88
+    },
+    {
+      "failure_reason": "otp_timeout",
+      "n": 2847,
+      "recovery_rate": 0.399,
+      "net_value_inr": 5729271.66
+    },
+    {
+      "failure_reason": "risk_block",
+      "n": 2046,
+      "recovery_rate": 0.1403,
+      "net_value_inr": 1573846.86
+    }
+  ],
+  "crro_segment_performance_by_payment_method": [
+    {
+      "payment_method": "card",
+      "n": 6011,
+      "recovery_rate": 0.253,
+      "net_value_inr": 8100468.54
+    },
+    {
+      "payment_method": "netbanking",
+      "n": 3025,
+      "recovery_rate": 0.2043,
+      "net_value_inr": 2986515.26
+    },
+    {
+      "payment_method": "upi",
+      "n": 8997,
+      "recovery_rate": 0.3017,
+      "net_value_inr": 13368575.9
+    },
+    {
+      "payment_method": "wallet",
+      "n": 1967,
+      "recovery_rate": 0.273,
+      "net_value_inr": 2524594.96
+    }
+  ],
+  "uplift_at_k": {
+    "uplift@10pct": 0.2601,
+    "uplift@20pct": 0.2363,
+    "uplift@30pct": 0.221,
+    "uplift@50pct": 0.1975,
+    "uplift@100pct_overall": 0.15
+  },
+  "auuc_qini": {
+    "auuc_inr_per_case": 8250752.57,
+    "qini_coefficient_inr_per_case": 1173014.32,
+    "curve": [
+      {
+        "top_fraction": 0.05,
+        "cumulative_true_incremental_inr": 1138807.66
+      },
+      {
+        "top_fraction": 0.1,
+        "cumulative_true_incremental_inr": 2121215.68
+      },
+      {
+        "top_fraction": 0.15,
+        "cumulative_true_incremental_inr": 3023680.03
+      },
+      {
+        "top_fraction": 0.2,
+        "cumulative_true_incremental_inr": 3922953.3
+      },
+      {
+        "top_fraction": 0.25,
+        "cumulative_true_incremental_inr": 4803744.77
+      },
+      {
+        "top_fraction": 0.3,
+        "cumulative_true_incremental_inr": 5623548.65
+      },
+      {
+        "top_fraction": 0.35,
+        "cumulative_true_incremental_inr": 6484638.0
+      },
+      {
+        "top_fraction": 0.4,
+        "cumulative_true_incremental_inr": 7274582.82
+      },
+      {
+        "top_fraction": 0.45,
+        "cumulative_true_incremental_inr": 8033928.05
+      },
+      {
+        "top_fraction": 0.5,
+        "cumulative_true_incremental_inr": 8775575.34
+      },
+      {
+        "top_fraction": 0.55,
+        "cumulative_true_incremental_inr": 9484087.25
+      },
+      {
+        "top_fraction": 0.6,
+        "cumulative_true_incremental_inr": 10156723.01
+      },
+      {
+        "top_fraction": 0.65,
+        "cumulative_true_incremental_inr": 10802665.9
+      },
+      {
+        "top_fraction": 0.7,
+        "cumulative_true_incremental_inr": 11438226.75
+      },
+      {
+        "top_fraction": 0.75,
+        "cumulative_true_incremental_inr": 12025583.0
+      },
+      {
+        "top_fraction": 0.8,
+        "cumulative_true_incremental_inr": 12522995.42
+      },
+      {
+        "top_fraction": 0.85,
+        "cumulative_true_incremental_inr": 13007583.44
+      },
+      {
+        "top_fraction": 0.9,
+        "cumulative_true_incremental_inr": 13409689.11
+      },
+      {
+        "top_fraction": 0.95,
+        "cumulative_true_incremental_inr": 13803786.09
+      },
+      {
+        "top_fraction": 1.0,
+        "cumulative_true_incremental_inr": 14155476.53
+      }
+    ]
+  },
+  "policy_value_curve_contact_budget_vs_incremental_value": [
+    {
+      "contact_budget": 0,
+      "incremental_net_value_inr": 7245885.0,
+      "incremental_recovered_inr": 7271481.0,
+      "contacts_used": 0
+    },
+    {
+      "contact_budget": 500,
+      "incremental_net_value_inr": 7940998.16,
+      "incremental_recovered_inr": 8012711.0,
+      "contacts_used": 500
+    },
+    {
+      "contact_budget": 1000,
+      "incremental_net_value_inr": 8392945.16,
+      "incremental_recovered_inr": 8467564.0,
+      "contacts_used": 1000
+    },
+    {
+      "contact_budget": 2000,
+      "incremental_net_value_inr": 8856926.26,
+      "incremental_recovered_inr": 8936323.0,
+      "contacts_used": 2000
+    },
+    {
+      "contact_budget": 4000,
+      "incremental_net_value_inr": 9035482.26,
+      "incremental_recovered_inr": 9120657.0,
+      "contacts_used": 3636
+    },
+    {
+      "contact_budget": 8000,
+      "incremental_net_value_inr": 9035482.26,
+      "incremental_recovered_inr": 9120657.0,
+      "contacts_used": 3636
+    }
+  ],
+  "multi_seed_confidence": {
+    "note": "CRRO (greedy mode for speed) incremental net value vs. control, across 3 additional held-out seeds of 5000 cases each, scaled budgets proportionally.",
+    "mean": 2238862.21,
+    "ci95_halfwidth": 277938.47,
+    "n_seeds": 3,
+    "values": [
+      2520829.28,
+      2071474.2,
+      2124283.16
+    ]
+  },
+  "performance_targets_measured": {
+    "model_fit_ms": 26636.901524999987,
+    "opportunity_evaluation_batch_ms_20000_cases": 12809.06,
+    "portfolio_optimization_latency_ms_20000_cases": 24551.63,
+    "action_execution_batch_ms": 1857.05,
+    "policy_value_curve_ms": 40921.46
+  }
+}

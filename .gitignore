@@ -1,0 +1,27 @@
+# Secrets / local configuration
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Frontend
+crro-dashboard/node_modules/
+crro-dashboard/dist/
+
+# Local/generated files
+*.log
+outputs/
+*.db
+*.db-wal
+*.db-shm
+__pycache__/
+.env
+node_modules/
+crro-dashboard/dist/
+.pytest_cache/

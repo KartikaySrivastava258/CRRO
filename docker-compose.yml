@@ -1,0 +1,19 @@
+# UNVERIFIED in the build environment (no Docker). Local demo only: dev credentials, simulator provider.
+services:
+  db:
+    image: postgres:16
+    environment: { POSTGRES_USER: crro, POSTGRES_PASSWORD: crro_local_dev_only, POSTGRES_DB: crro }
+    ports: ["127.0.0.1:5433:5432"]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U crro"], interval: 5s, timeout: 5s, retries: 10 }
+    volumes: [crro_pgdata:/var/lib/postgresql/data]
+  api:
+    build: .
+    depends_on: { db: { condition: service_healthy } }
+    environment:
+      CRRO_DATABASE_URL: postgresql://crro:crro_local_dev_only@db:5432/crro
+      CRRO_DEMO_MODE: "1"
+      CRRO_PROVIDER: simulator
+      CRRO_ALLOWED_ORIGINS: http://localhost:8000
+    ports: ["127.0.0.1:8000:8000"]
+volumes:
+  crro_pgdata:

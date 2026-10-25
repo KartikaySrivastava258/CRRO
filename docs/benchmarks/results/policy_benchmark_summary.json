@@ -1,0 +1,1555 @@
+{
+ "meta": {
+  "environment": {
+   "timestamp_utc": "2026-10-25T21:29:18Z",
+   "git_commit": "92abd60",
+   "git_dirty": true,
+   "python": "3.12.3",
+   "os": "Linux-6.18.44-fc-v153-x86_64-with-glibc2.39",
+   "cpu": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+   "cpu_count": 1,
+   "numpy": "2.4.4",
+   "pandas": "3.0.2",
+   "sklearn": "1.8.0",
+   "scipy": "1.17.1",
+   "ortools": "not installed"
+  },
+  "label": "SYNTHETIC_SIMULATION",
+  "seeds": [
+   101,
+   102,
+   103,
+   104,
+   105,
+   106,
+   107,
+   108,
+   109,
+   110
+  ],
+  "n_train": 40000,
+  "n_test": 10000,
+  "test_distribution_shift": true,
+  "opt_out_rate": 0.03,
+  "budgets": {
+   "daily_contacts": 1000,
+   "daily_incentive_inr": 50000.0,
+   "per_action_daily_cap": {
+    "ALTERNATIVE_PAYMENT_METHOD": 400
+   },
+   "per_customer_daily_contact_cap": 1
+  },
+  "model_default": "pooled (S-learner, HistGradientBoosting)",
+  "ci_method": "Student t, 95%, across seeds"
+ },
+ "policies": {
+  "CONTROL": {
+   "incremental_expected_net_paise": {
+    "mean": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_net_paise": {
+    "mean": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_gross_paise": {
+    "mean": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_recovered_cases": {
+    "mean": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "net_value_paise": {
+    "mean": 797363320.0,
+    "ci95_low": 771812125.9353878,
+    "ci95_high": 822914514.0646122,
+    "n": 10,
+    "sd": 35718106.376483314,
+    "method": "student_t_across_seeds"
+   },
+   "action_cost_paise": {
+    "mean": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_cost_paise": {
+    "mean": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "actions_taken": {
+    "mean": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "contacts_used": {
+    "mean": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_exposure_paise": {
+    "mean": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "recovery_rate": {
+    "mean": 0.17054999999999998,
+    "ci95_low": 0.1670399286577335,
+    "ci95_high": 0.17406007134226645,
+    "n": 10,
+    "sd": 0.004906741394358488,
+    "method": "student_t_across_seeds"
+   },
+   "feasibility_violations_total": 0
+  },
+  "FIXED_RETRY": {
+   "incremental_expected_net_paise": {
+    "mean": 224613683.71337944,
+    "ci95_low": 222248458.20605853,
+    "ci95_high": 226978909.22070035,
+    "n": 10,
+    "sd": 3306357.2708668294,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_net_paise": {
+    "mean": 224137190.0,
+    "ci95_low": 214202496.36812577,
+    "ci95_high": 234071883.63187423,
+    "n": 10,
+    "sd": 13887744.074258825,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_gross_paise": {
+    "mean": 225467950.0,
+    "ci95_low": 215538147.7511964,
+    "ci95_high": 235397752.2488036,
+    "n": 10,
+    "sd": 13880906.39221533,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_recovered_cases": {
+    "mean": 447.8,
+    "ci95_low": 435.74553447766647,
+    "ci95_high": 459.85446552233356,
+    "n": 10,
+    "sd": 16.85098084847157,
+    "method": "student_t_across_seeds"
+   },
+   "net_value_paise": {
+    "mean": 1021500510.0,
+    "ci95_low": 990717899.8604243,
+    "ci95_high": 1052283120.1395757,
+    "n": 10,
+    "sd": 43031121.783617906,
+    "method": "student_t_across_seeds"
+   },
+   "action_cost_paise": {
+    "mean": 1330760.0,
+    "ci95_low": 1322659.4134544206,
+    "ci95_high": 1338860.5865455794,
+    "n": 10,
+    "sd": 11323.83916052031,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_cost_paise": {
+    "mean": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "actions_taken": {
+    "mean": 6653.8,
+    "ci95_low": 6613.297067272104,
+    "ci95_high": 6694.302932727896,
+    "n": 10,
+    "sd": 56.61919580260155,
+    "method": "student_t_across_seeds"
+   },
+   "contacts_used": {
+    "mean": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_exposure_paise": {
+    "mean": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "recovery_rate": {
+    "mean": 0.21532999999999997,
+    "ci95_low": 0.21137412733536684,
+    "ci95_high": 0.2192858726646331,
+    "n": 10,
+    "sd": 0.005529928671430678,
+    "method": "student_t_across_seeds"
+   },
+   "feasibility_violations_total": 0
+  },
+  "RULE_BASED": {
+   "incremental_expected_net_paise": {
+    "mean": 404190912.97271806,
+    "ci95_low": 400322575.3503049,
+    "ci95_high": 408059250.5951312,
+    "n": 10,
+    "sd": 5407563.120068334,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_net_paise": {
+    "mean": 406199350.0,
+    "ci95_low": 393626455.1726607,
+    "ci95_high": 418772244.8273393,
+    "n": 10,
+    "sd": 17575695.04453048,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_gross_paise": {
+    "mean": 407871010.0,
+    "ci95_low": 395298791.0976965,
+    "ci95_high": 420443228.9023035,
+    "n": 10,
+    "sd": 17574750.16648411,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_recovered_cases": {
+    "mean": 810.2,
+    "ci95_low": 795.2180587545959,
+    "ci95_high": 825.1819412454042,
+    "n": 10,
+    "sd": 20.94330972464052,
+    "method": "student_t_across_seeds"
+   },
+   "net_value_paise": {
+    "mean": 1203562670.0,
+    "ci95_low": 1170034358.5577235,
+    "ci95_high": 1237090981.4422765,
+    "n": 10,
+    "sd": 46869347.54167518,
+    "method": "student_t_across_seeds"
+   },
+   "action_cost_paise": {
+    "mean": 1671660.0,
+    "ci95_low": 1664133.8016461693,
+    "ci95_high": 1679186.1983538307,
+    "n": 10,
+    "sd": 10520.899834773323,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_cost_paise": {
+    "mean": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "actions_taken": {
+    "mean": 6313.8,
+    "ci95_low": 6275.066654782211,
+    "ci95_high": 6352.533345217789,
+    "n": 10,
+    "sd": 54.14548303721496,
+    "method": "student_t_across_seeds"
+   },
+   "contacts_used": {
+    "mean": 1000.0,
+    "ci95_low": 1000.0,
+    "ci95_high": 1000.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_exposure_paise": {
+    "mean": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "recovery_rate": {
+    "mean": 0.25156999999999996,
+    "ci95_low": 0.2471238971286874,
+    "ci95_high": 0.2560161028713125,
+    "n": 10,
+    "sd": 0.0062152232461915626,
+    "method": "student_t_across_seeds"
+   },
+   "feasibility_violations_total": 0
+  },
+  "HISTORICAL_BEST_ACTION": {
+   "incremental_expected_net_paise": {
+    "mean": 325247614.67504376,
+    "ci95_low": 318624770.732693,
+    "ci95_high": 331870458.6173945,
+    "n": 10,
+    "sd": 9258097.443491176,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_net_paise": {
+    "mean": 329196259.8,
+    "ci95_low": 317732988.47324413,
+    "ci95_high": 340659531.1267559,
+    "n": 10,
+    "sd": 16024548.349332629,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_gross_paise": {
+    "mean": 332754030.0,
+    "ci95_low": 321256359.8764755,
+    "ci95_high": 344251700.1235245,
+    "n": 10,
+    "sd": 16072634.551452838,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_recovered_cases": {
+    "mean": 669.7,
+    "ci95_low": 654.5060782788893,
+    "ci95_high": 684.8939217211108,
+    "n": 10,
+    "sd": 21.2396379964966,
+    "method": "student_t_across_seeds"
+   },
+   "net_value_paise": {
+    "mean": 1126559579.8,
+    "ci95_low": 1093776040.8531847,
+    "ci95_high": 1159343118.7468152,
+    "n": 10,
+    "sd": 45828227.3829891,
+    "method": "student_t_across_seeds"
+   },
+   "action_cost_paise": {
+    "mean": 2108690.0,
+    "ci95_low": 2090449.8343435735,
+    "ci95_high": 2126930.1656564265,
+    "n": 10,
+    "sd": 25497.99338510124,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_cost_paise": {
+    "mean": 1449080.2,
+    "ci95_low": 1391837.5180210383,
+    "ci95_high": 1506322.8819789616,
+    "n": 10,
+    "sd": 80019.75168086107,
+    "method": "student_t_across_seeds"
+   },
+   "actions_taken": {
+    "mean": 7107.2,
+    "ci95_low": 7021.467327440823,
+    "ci95_high": 7192.932672559176,
+    "n": 10,
+    "sd": 119.84601231024195,
+    "method": "student_t_across_seeds"
+   },
+   "contacts_used": {
+    "mean": 1000.0,
+    "ci95_low": 1000.0,
+    "ci95_high": 1000.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_exposure_paise": {
+    "mean": 4999826.2,
+    "ci95_low": 4999752.956861122,
+    "ci95_high": 4999899.443138879,
+    "n": 10,
+    "sd": 102.38684811374293,
+    "method": "student_t_across_seeds"
+   },
+   "recovery_rate": {
+    "mean": 0.23752,
+    "ci95_low": 0.23383966812239904,
+    "ci95_high": 0.24120033187760098,
+    "n": 10,
+    "sd": 0.005144749211034921,
+    "method": "student_t_across_seeds"
+   },
+   "feasibility_violations_total": 0
+  },
+  "RAW_PROBABILITY": {
+   "incremental_expected_net_paise": {
+    "mean": 452770449.6316287,
+    "ci95_low": 442282458.73224384,
+    "ci95_high": 463258440.53101355,
+    "n": 10,
+    "sd": 14661200.320913615,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_net_paise": {
+    "mean": 451664120.6,
+    "ci95_low": 439105171.65401703,
+    "ci95_high": 464223069.545983,
+    "n": 10,
+    "sd": 17556200.04666315,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_gross_paise": {
+    "mean": 455801000.0,
+    "ci95_low": 443118577.02187425,
+    "ci95_high": 468483422.97812575,
+    "n": 10,
+    "sd": 17728804.84171326,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_recovered_cases": {
+    "mean": 811.7,
+    "ci95_low": 797.113227356126,
+    "ci95_high": 826.2867726438741,
+    "n": 10,
+    "sd": 20.390902110718127,
+    "method": "student_t_across_seeds"
+   },
+   "net_value_paise": {
+    "mean": 1249027440.6,
+    "ci95_low": 1214579621.3427978,
+    "ci95_high": 1283475259.857202,
+    "n": 10,
+    "sd": 48154730.83391848,
+    "method": "student_t_across_seeds"
+   },
+   "action_cost_paise": {
+    "mean": 1943180.0,
+    "ci95_low": 1934129.4361546151,
+    "ci95_high": 1952230.5638453849,
+    "n": 10,
+    "sd": 12651.815855617107,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_cost_paise": {
+    "mean": 2193699.4,
+    "ci95_low": 1990146.9664349202,
+    "ci95_high": 2397251.8335650796,
+    "n": 10,
+    "sd": 284546.68133647245,
+    "method": "student_t_across_seeds"
+   },
+   "actions_taken": {
+    "mean": 7165.8,
+    "ci95_low": 7136.576602677428,
+    "ci95_high": 7195.023397322572,
+    "n": 10,
+    "sd": 40.851492560792,
+    "method": "student_t_across_seeds"
+   },
+   "contacts_used": {
+    "mean": 1000.0,
+    "ci95_low": 1000.0,
+    "ci95_high": 1000.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_exposure_paise": {
+    "mean": 4999042.8,
+    "ci95_low": 4998479.836708331,
+    "ci95_high": 4999605.763291669,
+    "n": 10,
+    "sd": 786.9684167035479,
+    "method": "student_t_across_seeds"
+   },
+   "recovery_rate": {
+    "mean": 0.25172,
+    "ci95_low": 0.248229657738629,
+    "ci95_high": 0.25521034226137096,
+    "n": 10,
+    "sd": 0.00487916204098841,
+    "method": "student_t_across_seeds"
+   },
+   "feasibility_violations_total": 0
+  },
+  "UPLIFT_GREEDY": {
+   "incremental_expected_net_paise": {
+    "mean": 462049764.6492175,
+    "ci95_low": 451152815.4707186,
+    "ci95_high": 472946713.82771635,
+    "n": 10,
+    "sd": 15232884.574886242,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_net_paise": {
+    "mean": 464497745.0,
+    "ci95_low": 451354197.99654025,
+    "ci95_high": 477641292.00345975,
+    "n": 10,
+    "sd": 18373411.78055075,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_gross_paise": {
+    "mean": 468317540.0,
+    "ci95_low": 455142115.218262,
+    "ci95_high": 481492964.781738,
+    "n": 10,
+    "sd": 18417973.841826964,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_recovered_cases": {
+    "mean": 823.0,
+    "ci95_low": 807.6832673739266,
+    "ci95_high": 838.3167326260734,
+    "n": 10,
+    "sd": 21.411315803668966,
+    "method": "student_t_across_seeds"
+   },
+   "net_value_paise": {
+    "mean": 1261861065.0,
+    "ci95_low": 1225962719.69506,
+    "ci95_high": 1297759410.30494,
+    "n": 10,
+    "sd": 50182426.42982493,
+    "method": "student_t_across_seeds"
+   },
+   "action_cost_paise": {
+    "mean": 1925080.0,
+    "ci95_low": 1910822.3946834716,
+    "ci95_high": 1939337.6053165284,
+    "n": 10,
+    "sd": 19930.757916123286,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_cost_paise": {
+    "mean": 1894715.0,
+    "ci95_low": 1714273.2653980623,
+    "ci95_high": 2075156.7346019377,
+    "n": 10,
+    "sd": 252240.15186810453,
+    "method": "student_t_across_seeds"
+   },
+   "actions_taken": {
+    "mean": 7078.0,
+    "ci95_low": 7030.757549738241,
+    "ci95_high": 7125.242450261759,
+    "n": 10,
+    "sd": 66.04039168064747,
+    "method": "student_t_across_seeds"
+   },
+   "contacts_used": {
+    "mean": 1000.0,
+    "ci95_low": 1000.0,
+    "ci95_high": 1000.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_exposure_paise": {
+    "mean": 4999159.6,
+    "ci95_low": 4998579.183075882,
+    "ci95_high": 4999740.016924118,
+    "n": 10,
+    "sd": 811.3669124795925,
+    "method": "student_t_across_seeds"
+   },
+   "recovery_rate": {
+    "mean": 0.25284999999999996,
+    "ci95_low": 0.24894458367590233,
+    "ci95_high": 0.2567554163240976,
+    "n": 10,
+    "sd": 0.005459395570940064,
+    "method": "student_t_across_seeds"
+   },
+   "feasibility_violations_total": 0
+  },
+  "CRRO_EXACT": {
+   "incremental_expected_net_paise": {
+    "mean": 484708452.89409053,
+    "ci95_low": 476887808.7933212,
+    "ci95_high": 492529096.9948599,
+    "n": 10,
+    "sd": 10932506.60683502,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_net_paise": {
+    "mean": 485466258.8,
+    "ci95_low": 473433217.9597104,
+    "ci95_high": 497499299.6402896,
+    "n": 10,
+    "sd": 16821031.208138015,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_gross_paise": {
+    "mean": 489177930.0,
+    "ci95_low": 477181759.8275024,
+    "ci95_high": 501174100.1724976,
+    "n": 10,
+    "sd": 16769489.56859517,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_recovered_cases": {
+    "mean": 871.6,
+    "ci95_low": 857.9593611270702,
+    "ci95_high": 885.2406388729298,
+    "n": 10,
+    "sd": 19.068298298484844,
+    "method": "student_t_across_seeds"
+   },
+   "net_value_paise": {
+    "mean": 1282829578.8,
+    "ci95_low": 1248583005.632893,
+    "ci95_high": 1317076151.9671068,
+    "n": 10,
+    "sd": 47873408.19844034,
+    "method": "student_t_across_seeds"
+   },
+   "action_cost_paise": {
+    "mean": 2068640.0,
+    "ci95_low": 2051954.3625714632,
+    "ci95_high": 2085325.6374285368,
+    "n": 10,
+    "sd": 23324.91276630109,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_cost_paise": {
+    "mean": 1643031.2,
+    "ci95_low": 1526374.988987482,
+    "ci95_high": 1759687.411012518,
+    "n": 10,
+    "sd": 163074.13829216862,
+    "method": "student_t_across_seeds"
+   },
+   "actions_taken": {
+    "mean": 7430.1,
+    "ci95_low": 7381.395628449953,
+    "ci95_high": 7478.804371550048,
+    "n": 10,
+    "sd": 68.0840167244364,
+    "method": "student_t_across_seeds"
+   },
+   "contacts_used": {
+    "mean": 1000.0,
+    "ci95_low": 1000.0,
+    "ci95_high": 1000.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_exposure_paise": {
+    "mean": 4999970.6,
+    "ci95_low": 4999951.726986095,
+    "ci95_high": 4999989.473013904,
+    "n": 10,
+    "sd": 26.382654234258627,
+    "method": "student_t_across_seeds"
+   },
+   "recovery_rate": {
+    "mean": 0.25771,
+    "ci95_low": 0.25440737966339816,
+    "ci95_high": 0.26101262033660183,
+    "n": 10,
+    "sd": 0.004616744885017284,
+    "method": "student_t_across_seeds"
+   },
+   "feasibility_violations_total": 0
+  },
+  "UPLIFT_UNCONSTRAINED (diagnostic)": {
+   "incremental_expected_net_paise": {
+    "mean": 710248295.1170106,
+    "ci95_low": 698109646.6849577,
+    "ci95_high": 722386943.5490634,
+    "n": 10,
+    "sd": 16968660.44171607,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_net_paise": {
+    "mean": 699628927.6,
+    "ci95_low": 683693907.249862,
+    "ci95_high": 715563947.9501381,
+    "n": 10,
+    "sd": 22275622.44403854,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_gross_paise": {
+    "mean": 723929710.0,
+    "ci95_low": 708206262.097081,
+    "ci95_high": 739653157.902919,
+    "n": 10,
+    "sd": 21979864.556677524,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_recovered_cases": {
+    "mean": 1511.3,
+    "ci95_low": 1485.8446164505954,
+    "ci95_high": 1536.7553835494045,
+    "n": 10,
+    "sd": 35.584172511572234,
+    "method": "student_t_across_seeds"
+   },
+   "net_value_paise": {
+    "mean": 1496992247.6,
+    "ci95_low": 1458220606.0466845,
+    "ci95_high": 1535763889.1533153,
+    "n": 10,
+    "sd": 54199017.62282734,
+    "method": "student_t_across_seeds"
+   },
+   "action_cost_paise": {
+    "mean": 8189640.0,
+    "ci95_low": 7943748.226212519,
+    "ci95_high": 8435531.773787482,
+    "n": 10,
+    "sd": 343732.99780174985,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_cost_paise": {
+    "mean": 16111142.4,
+    "ci95_low": 14715401.67963733,
+    "ci95_high": 17506883.120362673,
+    "n": 10,
+    "sd": 1951110.989092636,
+    "method": "student_t_across_seeds"
+   },
+   "actions_taken": {
+    "mean": 9885.1,
+    "ci95_low": 9873.08971830584,
+    "ci95_high": 9897.11028169416,
+    "n": 10,
+    "sd": 16.78921611564333,
+    "method": "student_t_across_seeds"
+   },
+   "contacts_used": {
+    "mean": 8381.9,
+    "ci95_low": 8128.840546738613,
+    "ci95_high": 8634.959453261386,
+    "n": 10,
+    "sd": 353.75272280067173,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_exposure_paise": {
+    "mean": 60771455.8,
+    "ci95_low": 55851764.811876886,
+    "ci95_high": 65691146.78812311,
+    "n": 10,
+    "sd": 6877253.783476945,
+    "method": "student_t_across_seeds"
+   },
+   "recovery_rate": {
+    "mean": 0.32167999999999997,
+    "ci95_low": 0.3171357722449433,
+    "ci95_high": 0.3262242277550566,
+    "n": 10,
+    "sd": 0.006352392375230687,
+    "method": "student_t_across_seeds"
+   },
+   "feasibility_violations_total": 0
+  },
+  "ORACLE_CONSTRAINED (simulator-only)": {
+   "incremental_expected_net_paise": {
+    "mean": 529911029.11978704,
+    "ci95_low": 524409679.13726276,
+    "ci95_high": 535412379.1023113,
+    "n": 10,
+    "sd": 7690356.990486464,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_net_paise": {
+    "mean": 534930103.4,
+    "ci95_low": 521913529.2255714,
+    "ci95_high": 547946677.5744286,
+    "n": 10,
+    "sd": 18195916.004706014,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_gross_paise": {
+    "mean": 538908850.0,
+    "ci95_low": 525891968.8872855,
+    "ci95_high": 551925731.1127145,
+    "n": 10,
+    "sd": 18196345.074843403,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_recovered_cases": {
+    "mean": 926.8,
+    "ci95_low": 913.8935832954895,
+    "ci95_high": 939.7064167045104,
+    "n": 10,
+    "sd": 18.041926480038406,
+    "method": "student_t_across_seeds"
+   },
+   "net_value_paise": {
+    "mean": 1332293423.4,
+    "ci95_low": 1299237540.281731,
+    "ci95_high": 1365349306.5182693,
+    "n": 10,
+    "sd": 46208938.282934316,
+    "method": "student_t_across_seeds"
+   },
+   "action_cost_paise": {
+    "mean": 2025290.0,
+    "ci95_low": 2019355.9909760416,
+    "ci95_high": 2031224.0090239584,
+    "n": 10,
+    "sd": 8295.172625623225,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_cost_paise": {
+    "mean": 1953456.6,
+    "ci95_low": 1877804.7639980041,
+    "ci95_high": 2029108.436001996,
+    "n": 10,
+    "sd": 105753.97451338544,
+    "method": "student_t_across_seeds"
+   },
+   "actions_taken": {
+    "mean": 7226.2,
+    "ci95_low": 7195.020503648278,
+    "ci95_high": 7257.379496351722,
+    "n": 10,
+    "sd": 43.585930451618594,
+    "method": "student_t_across_seeds"
+   },
+   "contacts_used": {
+    "mean": 1000.0,
+    "ci95_low": 1000.0,
+    "ci95_high": 1000.0,
+    "n": 10,
+    "sd": 0.0,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_exposure_paise": {
+    "mean": 4999968.4,
+    "ci95_low": 4999950.255048893,
+    "ci95_high": 4999986.544951107,
+    "n": 10,
+    "sd": 25.36489262302874,
+    "method": "student_t_across_seeds"
+   },
+   "recovery_rate": {
+    "mean": 0.26323,
+    "ci95_low": 0.2592772907571327,
+    "ci95_high": 0.26718270924286736,
+    "n": 10,
+    "sd": 0.005525506512730049,
+    "method": "student_t_across_seeds"
+   },
+   "feasibility_violations_total": 0
+  },
+  "ORACLE_UNCONSTRAINED (simulator-only)": {
+   "incremental_expected_net_paise": {
+    "mean": 791614302.737929,
+    "ci95_low": 785449714.6127189,
+    "ci95_high": 797778890.863139,
+    "n": 10,
+    "sd": 8617499.983236164,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_net_paise": {
+    "mean": 785174997.8,
+    "ci95_low": 764617053.0740817,
+    "ci95_high": 805732942.5259182,
+    "n": 10,
+    "sd": 28738025.109331015,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_gross_paise": {
+    "mean": 805540290.0,
+    "ci95_low": 784759862.0830525,
+    "ci95_high": 826320717.9169475,
+    "n": 10,
+    "sd": 29049035.164832354,
+    "method": "student_t_across_seeds"
+   },
+   "incremental_recovered_cases": {
+    "mean": 1670.4,
+    "ci95_low": 1645.0024230391848,
+    "ci95_high": 1695.7975769608154,
+    "n": 10,
+    "sd": 35.5033644728058,
+    "method": "student_t_across_seeds"
+   },
+   "net_value_paise": {
+    "mean": 1582538317.8,
+    "ci95_low": 1540856885.1459997,
+    "ci95_high": 1624219750.4540002,
+    "n": 10,
+    "sd": 58266625.10155396,
+    "method": "student_t_across_seeds"
+   },
+   "action_cost_paise": {
+    "mean": 7497880.0,
+    "ci95_low": 7471482.1820909735,
+    "ci95_high": 7524277.8179090265,
+    "n": 10,
+    "sd": 36901.60490337032,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_cost_paise": {
+    "mean": 12867412.2,
+    "ci95_low": 12506082.882854056,
+    "ci95_high": 13228741.517145943,
+    "n": 10,
+    "sd": 505103.5561831301,
+    "method": "student_t_across_seeds"
+   },
+   "actions_taken": {
+    "mean": 9897.6,
+    "ci95_low": 9890.913123968912,
+    "ci95_high": 9904.286876031088,
+    "n": 10,
+    "sd": 9.347608131376592,
+    "method": "student_t_across_seeds"
+   },
+   "contacts_used": {
+    "mean": 7689.5,
+    "ci95_low": 7654.796791983713,
+    "ci95_high": 7724.203208016287,
+    "n": 10,
+    "sd": 48.51173970173497,
+    "method": "student_t_across_seeds"
+   },
+   "incentive_exposure_paise": {
+    "mean": 48651875.2,
+    "ci95_low": 48083729.833154604,
+    "ci95_high": 49220020.5668454,
+    "n": 10,
+    "sd": 794212.4582895939,
+    "method": "student_t_across_seeds"
+   },
+   "recovery_rate": {
+    "mean": 0.33759,
+    "ci95_low": 0.33284540434663323,
+    "ci95_high": 0.34233459565336677,
+    "n": 10,
+    "sd": 0.006632487383243841,
+    "method": "student_t_across_seeds"
+   },
+   "feasibility_violations_total": 0
+  }
+ },
+ "paired_differences_crro_exact_minus": {
+  "CONTROL": {
+   "mean": 484708452.89409053,
+   "ci95_low": 476887808.7933212,
+   "ci95_high": 492529096.9948599,
+   "n": 10,
+   "sd": 10932506.60683502,
+   "method": "student_t_across_seeds"
+  },
+  "FIXED_RETRY": {
+   "mean": 260094769.18071118,
+   "ci95_low": 252625544.73464757,
+   "ci95_high": 267563993.6267748,
+   "n": 10,
+   "sd": 10441255.803533006,
+   "method": "student_t_across_seeds"
+  },
+  "RULE_BASED": {
+   "mean": 80517539.92137253,
+   "ci95_low": 73715076.82118963,
+   "ci95_high": 87320003.02155544,
+   "n": 10,
+   "sd": 9509187.712324772,
+   "method": "student_t_across_seeds"
+  },
+  "HISTORICAL_BEST_ACTION": {
+   "mean": 159460838.21904683,
+   "ci95_low": 152539277.16034168,
+   "ci95_high": 166382399.27775198,
+   "n": 10,
+   "sd": 9675675.178271048,
+   "method": "student_t_across_seeds"
+  },
+  "RAW_PROBABILITY": {
+   "mean": 31938003.2624619,
+   "ci95_low": 25893510.17903271,
+   "ci95_high": 37982496.34589109,
+   "n": 10,
+   "sd": 8449618.69100494,
+   "method": "student_t_across_seeds"
+  },
+  "UPLIFT_GREEDY": {
+   "mean": 22658688.244873144,
+   "ci95_low": 16748250.270928932,
+   "ci95_high": 28569126.218817353,
+   "n": 10,
+   "sd": 8262222.569759586,
+   "method": "student_t_across_seeds"
+  },
+  "UPLIFT_UNCONSTRAINED (diagnostic)": {
+   "mean": -225539842.22292,
+   "ci95_low": -235104731.38296422,
+   "ci95_high": -215974953.06287578,
+   "n": 10,
+   "sd": 13370793.068762878,
+   "method": "student_t_across_seeds"
+  },
+  "ORACLE_CONSTRAINED (simulator-only)": {
+   "mean": -45202576.2256964,
+   "ci95_low": -50996033.072133906,
+   "ci95_high": -39409119.37925889,
+   "n": 10,
+   "sd": 8098694.229527833,
+   "method": "student_t_across_seeds"
+  },
+  "ORACLE_UNCONSTRAINED (simulator-only)": {
+   "mean": -306905849.84383833,
+   "ci95_low": -312963449.8725165,
+   "ci95_high": -300848249.81516016,
+   "n": 10,
+   "sd": 8467940.93706086,
+   "method": "student_t_across_seeds"
+  }
+ },
+ "crro_share_of_constrained_oracle": {
+  "mean": 0.9146906885340471,
+  "ci95_low": 0.9037777140592335,
+  "ci95_high": 0.9256036630088608,
+  "n": 10,
+  "sd": 0.015255286394427022,
+  "method": "student_t_across_seeds"
+ },
+ "tlearner_vs_pooled_crro_exact": {
+  "mean": 444042999.16254556,
+  "ci95_low": 432915612.87585,
+  "ci95_high": 455170385.4492411,
+  "n": 10,
+  "sd": 15555013.439895213,
+  "method": "student_t_across_seeds"
+ },
+ "exact_vs_greedy": {
+  "objective_gain_pct": {
+   "mean": 5.735546244107016,
+   "ci95_low": 4.897347141118919,
+   "ci95_high": 6.573745347095112,
+   "n": 10,
+   "sd": 1.17172155044865,
+   "method": "student_t_across_seeds"
+  },
+  "exact_wall_ms": {
+   "mean": 7636.7880000000005,
+   "ci95_low": 6079.700373884087,
+   "ci95_high": 9193.875626115914,
+   "n": 10,
+   "sd": 2176.6584108153797,
+   "method": "student_t_across_seeds"
+  },
+  "greedy_wall_ms": {
+   "mean": 192.82500000000002,
+   "ci95_low": 171.40026986032962,
+   "ci95_high": 214.24973013967042,
+   "n": 10,
+   "sd": 29.9497075667415,
+   "method": "student_t_across_seeds"
+  },
+  "statuses": [
+   "OPTIMAL"
+  ],
+  "solver": [
+   "highs"
+  ]
+ },
+ "model_quality": {
+  "control_brier_shifted": {
+   "mean": 0.119224,
+   "ci95_low": 0.11650502217904173,
+   "ci95_high": 0.12194297782095827,
+   "n": 10,
+   "sd": 0.0038008689065060428,
+   "method": "student_t_across_seeds"
+  },
+  "control_ece_shifted": {
+   "mean": 0.028591000000000005,
+   "ci95_low": 0.023787883449551725,
+   "ci95_high": 0.033394116550448286,
+   "n": 10,
+   "sd": 0.006714293956428579,
+   "method": "student_t_across_seeds"
+  },
+  "control_brier_in_distribution": {
+   "mean": 0.127157,
+   "ci95_low": 0.12391099399716886,
+   "ci95_high": 0.1304030060028311,
+   "n": 10,
+   "sd": 0.0045376035035639166,
+   "method": "student_t_across_seeds"
+  },
+  "control_ece_in_distribution": {
+   "mean": 0.022680000000000002,
+   "ci95_low": 0.01798335275795978,
+   "ci95_high": 0.027376647242040225,
+   "n": 10,
+   "sd": 0.006565460126043466,
+   "method": "student_t_across_seeds"
+  },
+  "qini_rct_observed": {
+   "ALTERNATIVE_PAYMENT_METHOD": {
+    "mean": 16.585240000000002,
+    "ci95_low": 14.250983672375517,
+    "ci95_high": 18.919496327624486,
+    "n": 10,
+    "sd": 3.26306534282652,
+    "method": "student_t_across_seeds"
+   },
+   "CUSTOMER_NUDGE": {
+    "mean": 5.2900800000000014,
+    "ci95_low": 0.18012216589869112,
+    "ci95_high": 10.400037834101312,
+    "n": 10,
+    "sd": 7.143228493988788,
+    "method": "student_t_across_seeds"
+   },
+   "PAYMENT_LINK": {
+    "mean": 5.96504,
+    "ci95_low": 1.4978551423367943,
+    "ci95_high": 10.432224857663206,
+    "n": 10,
+    "sd": 6.24469383097896,
+    "method": "student_t_across_seeds"
+   },
+   "RETRY_LATER": {
+    "mean": 11.994509999999998,
+    "ci95_low": 9.240394032316765,
+    "ci95_high": 14.748625967683232,
+    "n": 10,
+    "sd": 3.849988648597984,
+    "method": "student_t_across_seeds"
+   },
+   "RETRY_NOW": {
+    "mean": 19.63366,
+    "ci95_low": 15.174001676230066,
+    "ci95_high": 24.09331832376993,
+    "n": 10,
+    "sd": 6.234172462092391,
+    "method": "student_t_across_seeds"
+   },
+   "SMALL_INCENTIVE": {
+    "mean": 19.02571,
+    "ci95_low": 14.709691000170157,
+    "ci95_high": 23.341728999829844,
+    "n": 10,
+    "sd": 6.033378532878573,
+    "method": "student_t_across_seeds"
+   }
+  },
+  "oracle_uplift_top20pct (simulator-only)": {
+   "mean": 0.245176,
+   "ci95_low": 0.23910849582749702,
+   "ci95_high": 0.251243504172503,
+   "n": 10,
+   "sd": 0.008481785975449586,
+   "method": "student_t_across_seeds"
+  },
+  "oracle_uplift_all (simulator-only)": {
+   "mean": 0.15383,
+   "ci95_low": 0.1517604345701237,
+   "ci95_high": 0.1558995654298763,
+   "n": 10,
+   "sd": 0.002893052981809279,
+   "method": "student_t_across_seeds"
+  }
+ },
+ "sensitivity_mean_over_seeds": {
+  "contact_budget": [
+   {
+    "factor": 0.25,
+    "budget": 250,
+    "contacts_used": 250,
+    "incremental_expected_net_paise": {
+     "mean": 422203344.2910806,
+     "ci95_low": 416044707.67488694,
+     "ci95_high": 428361980.90727425,
+     "n": 10,
+     "sd": 8609180.347307915,
+     "method": "student_t_across_seeds"
+    }
+   },
+   {
+    "factor": 0.5,
+    "budget": 500,
+    "contacts_used": 500,
+    "incremental_expected_net_paise": {
+     "mean": 454337969.39327776,
+     "ci95_low": 446991060.29152733,
+     "ci95_high": 461684878.4950282,
+     "n": 10,
+     "sd": 10270270.742380576,
+     "method": "student_t_across_seeds"
+    }
+   },
+   {
+    "factor": 1.0,
+    "budget": 1000,
+    "contacts_used": 1000,
+    "incremental_expected_net_paise": {
+     "mean": 484708452.89409053,
+     "ci95_low": 476887808.7933212,
+     "ci95_high": 492529096.9948599,
+     "n": 10,
+     "sd": 10932506.60683502,
+     "method": "student_t_across_seeds"
+    }
+   },
+   {
+    "factor": 2.0,
+    "budget": 2000,
+    "contacts_used": 2000,
+    "incremental_expected_net_paise": {
+     "mean": 504347464.7786621,
+     "ci95_low": 496922434.7390268,
+     "ci95_high": 511772494.8182974,
+     "n": 10,
+     "sd": 10379476.283325069,
+     "method": "student_t_across_seeds"
+    }
+   },
+   {
+    "factor": 4.0,
+    "budget": 4000,
+    "contacts_used": 2709,
+    "incremental_expected_net_paise": {
+     "mean": 508506546.93086445,
+     "ci95_low": 500882457.77821547,
+     "ci95_high": 516130636.08351344,
+     "n": 10,
+     "sd": 10657741.735649979,
+     "method": "student_t_across_seeds"
+    }
+   }
+  ],
+  "incentive_budget": [
+   {
+    "factor": 0.0,
+    "incentive_exposure_paise": 0,
+    "incremental_expected_net_paise": {
+     "mean": 455803812.1351789,
+     "ci95_low": 447096101.8320737,
+     "ci95_high": 464511522.43828416,
+     "n": 10,
+     "sd": 12172539.651783723,
+     "method": "student_t_across_seeds"
+    }
+   },
+   {
+    "factor": 0.5,
+    "incentive_exposure_paise": 2499928,
+    "incremental_expected_net_paise": {
+     "mean": 471999390.03265285,
+     "ci95_low": 463974543.1630386,
+     "ci95_high": 480024236.9022671,
+     "n": 10,
+     "sd": 11217962.394205716,
+     "method": "student_t_across_seeds"
+    }
+   },
+   {
+    "factor": 1.0,
+    "incentive_exposure_paise": 4999946,
+    "incremental_expected_net_paise": {
+     "mean": 484708452.89409053,
+     "ci95_low": 476887808.7933212,
+     "ci95_high": 492529096.9948599,
+     "n": 10,
+     "sd": 10932506.60683502,
+     "method": "student_t_across_seeds"
+    }
+   },
+   {
+    "factor": 2.0,
+    "incentive_exposure_paise": 9999954,
+    "incremental_expected_net_paise": {
+     "mean": 501888748.5912994,
+     "ci95_low": 494037867.53727454,
+     "ci95_high": 509739629.6453243,
+     "n": 10,
+     "sd": 10974774.952891616,
+     "method": "student_t_across_seeds"
+    }
+   }
+  ],
+  "action_cost_multiplier": [
+   {
+    "multiplier": 1.0,
+    "actions_taken": 7542,
+    "incremental_expected_net_paise": {
+     "mean": 484708452.89409053,
+     "ci95_low": 476887808.7933212,
+     "ci95_high": 492529096.9948599,
+     "n": 10,
+     "sd": 10932506.60683502,
+     "method": "student_t_across_seeds"
+    }
+   },
+   {
+    "multiplier": 5.0,
+    "actions_taken": 7520,
+    "incremental_expected_net_paise": {
+     "mean": 476367798.8202364,
+     "ci95_low": 468688569.57499677,
+     "ci95_high": 484047028.065476,
+     "n": 10,
+     "sd": 10734822.270038355,
+     "method": "student_t_across_seeds"
+    }
+   },
+   {
+    "multiplier": 20.0,
+    "actions_taken": 7274,
+    "incremental_expected_net_paise": {
+     "mean": 445090626.8257896,
+     "ci95_low": 437184037.08255583,
+     "ci95_high": 452997216.5690233,
+     "n": 10,
+     "sd": 11052650.330544205,
+     "method": "student_t_across_seeds"
+    }
+   }
+  ]
+ },
+ "crro_segments_seed_mean": {
+  "failure_reason": {
+   "bank_decline": {
+    "n_mean": 2201.0,
+    "incremental_net_paise": {
+     "mean": 58722629.8,
+     "ci95_low": 55253434.30101353,
+     "ci95_high": 62191825.298986465,
+     "n": 10,
+     "sd": 4849600.905549556,
+     "method": "student_t_across_seeds"
+    }
+   },
+   "card_expired": {
+    "n_mean": 1000.3,
+    "incremental_net_paise": {
+     "mean": 45570584.0,
+     "ci95_low": 36880411.42259991,
+     "ci95_high": 54260756.57740009,
+     "n": 10,
+     "sd": 12148023.601741057,
+     "method": "student_t_across_seeds"
+    }
+   },
+   "insufficient_funds": {
+    "n_mean": 3001.3,
+    "incremental_net_paise": {
+     "mean": 160936406.2,
+     "ci95_low": 153718365.2192552,
+     "ci95_high": 168154447.18074477,
+     "n": 10,
+     "sd": 10090125.531046124,
+     "method": "student_t_across_seeds"
+    }
+   },
+   "network_error": {
+    "n_mean": 1402.7,
+    "incremental_net_paise": {
+     "mean": 115144669.6,
+     "ci95_low": 108172191.59924644,
+     "ci95_high": 122117147.60075355,
+     "n": 10,
+     "sd": 9746852.155278524,
+     "method": "student_t_across_seeds"
+    }
+   },
+   "otp_timeout": {
+    "n_mean": 1392.7,
+    "incremental_net_paise": {
+     "mean": 88414807.8,
+     "ci95_low": 80559848.29542501,
+     "ci95_high": 96269767.30457498,
+     "n": 10,
+     "sd": 10980476.233631417,
+     "method": "student_t_across_seeds"
+    }
+   },
+   "risk_block": {
+    "n_mean": 1002.0,
+    "incremental_net_paise": {
+     "mean": 16677161.4,
+     "ci95_low": 13600484.374828454,
+     "ci95_high": 19753838.425171547,
+     "n": 10,
+     "sd": 4300897.914722465,
+     "method": "student_t_across_seeds"
+    }
+   }
+  },
+  "payment_method": {
+   "card": {
+    "n_mean": 3005.6,
+    "incremental_net_paise": {
+     "mean": 158076334.6,
+     "ci95_low": 153129402.97794622,
+     "ci95_high": 163023266.22205377,
+     "n": 10,
+     "sd": 6915333.56393798,
+     "method": "student_t_across_seeds"
+    }
+   },
+   "netbanking": {
+    "n_mean": 1499.7,
+    "incremental_net_paise": {
+     "mean": 52923267.2,
+     "ci95_low": 49103976.65827183,
+     "ci95_high": 56742557.74172818,
+     "n": 10,
+     "sd": 5339000.029007613,
+     "method": "student_t_across_seeds"
+    }
+   },
+   "upi": {
+    "n_mean": 4505.7,
+    "incremental_net_paise": {
+     "mean": 225777491.0,
+     "ci95_low": 216590925.5699644,
+     "ci95_high": 234964056.4300356,
+     "n": 10,
+     "sd": 12841932.96151992,
+     "method": "student_t_across_seeds"
+    }
+   },
+   "wallet": {
+    "n_mean": 989.0,
+    "incremental_net_paise": {
+     "mean": 48689166.0,
+     "ci95_low": 42657525.76277798,
+     "ci95_high": 54720806.23722202,
+     "n": 10,
+     "sd": 8431651.650916431,
+     "method": "student_t_across_seeds"
+    }
+   }
+  },
+  "merchant_category": {
+   "ecommerce": {
+    "n_mean": 2017.2,
+    "incremental_net_paise": {
+     "mean": 92033449.8,
+     "ci95_low": 82904358.4965135,
+     "ci95_high": 101162541.1034865,
+     "n": 10,
+     "sd": 12761589.672639392,
+     "method": "student_t_across_seeds"
+    }
+   },
+   "edtech": {
+    "n_mean": 2000.1,
+    "incremental_net_paise": {
+     "mean": 99374503.0,
+     "ci95_low": 92597067.55363093,
+     "ci95_high": 106151938.44636907,
+     "n": 10,
+     "sd": 9474201.464753862,
+     "method": "student_t_across_seeds"
+    }
+   },
+   "food_delivery": {
+    "n_mean": 1980.7,
+    "incremental_net_paise": {
+     "mean": 96296201.0,
+     "ci95_low": 83730173.90810297,
+     "ci95_high": 108862228.09189703,
+     "n": 10,
+     "sd": 17566094.61237567,
+     "method": "student_t_across_seeds"
+    }
+   },
+   "subscription": {
+    "n_mean": 1986.6,
+    "incremental_net_paise": {
+     "mean": 99393721.2,
+     "ci95_low": 92602988.75282231,
+     "ci95_high": 106184453.6471777,
+     "n": 10,
+     "sd": 9492789.390162349,
+     "method": "student_t_across_seeds"
+    }
+   },
+   "travel": {
+    "n_mean": 2015.4,
+    "incremental_net_paise": {
+     "mean": 98368383.8,
+     "ci95_low": 92394176.71251261,
+     "ci95_high": 104342590.88748738,
+     "n": 10,
+     "sd": 8351365.6436726535,
+     "method": "student_t_across_seeds"
+    }
+   }
+  },
+  "amount_band": {
+   "1k-5k": {
+    "n_mean": 5598.7,
+    "incremental_net_paise": {
+     "mean": 128674348.2,
+     "ci95_low": 123629657.40500662,
+     "ci95_high": 133719038.99499339,
+     "n": 10,
+     "sd": 7051991.464523948,
+     "method": "student_t_across_seeds"
+    }
+   },
+   "5k-20k": {
+    "n_mean": 3359.5,
+    "incremental_net_paise": {
+     "mean": 284891620.6,
+     "ci95_low": 271328807.95559824,
+     "ci95_high": 298454433.2444018,
+     "n": 10,
+     "sd": 18959504.73281367,
+     "method": "student_t_across_seeds"
+    }
+   },
+   "<1k": {
+    "n_mean": 755.7,
+    "incremental_net_paise": {
+     "mean": 4430150.0,
+     "ci95_low": 4090721.7671002964,
+     "ci95_high": 4769578.232899703,
+     "n": 10,
+     "sd": 474487.95149203856,
+     "method": "student_t_across_seeds"
+    }
+   },
+   ">=20k": {
+    "n_mean": 286.1,
+    "incremental_net_paise": {
+     "mean": 67470140.0,
+     "ci95_low": 60964080.03280862,
+     "ci95_high": 73976199.96719138,
+     "n": 10,
+     "sd": 9094844.703237103,
+     "method": "student_t_across_seeds"
+    }
+   }
+  }
+ }
+}

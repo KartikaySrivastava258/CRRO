@@ -1,0 +1,40 @@
+# UNVERIFIED: written in an offline environment; first CI run may need adjustments.
+name: CRRO CI
+on: [push, pull_request]
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_USER: crro, POSTGRES_PASSWORD: crro_ci, POSTGRES_DB: crro_test }
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U crro" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements-dev.txt
+      - name: Unit + integration tests on SQLite (FastAPI adapter required)
+        env: { CRRO_REQUIRE_FASTAPI: "1" }
+        run: python -m pytest tests -v -rs | tee pytest-sqlite.txt
+      - name: Same suite on PostgreSQL (fresh DB, migrations applied by the suite)
+        env: { CRRO_TEST_DATABASE_URL: "postgresql://crro:crro_ci@localhost:5432/crro_test", CRRO_REQUIRE_POSTGRES: "1", CRRO_REQUIRE_FASTAPI: "1" }
+        run: python -m pytest tests -v -rs | tee pytest-postgres.txt
+      - name: Fail on unexpected skips
+        run: "! grep -E 'SKIPPED' pytest-sqlite.txt pytest-postgres.txt"
+      - uses: actions/upload-artifact@v4
+        with: { name: test-logs, path: "pytest-*.txt" }
+  dashboard-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - run: pip install -r requirements.txt && python scripts/train_model.py --n-train 20000
+      - run: cd crro-dashboard && npm install && npm run build && npx playwright install --with-deps chromium
+      - run: scripts/run_e2e.sh --screenshots ci-screenshots
+      - uses: actions/upload-artifact@v4
+        with: { name: screenshots, path: ci-screenshots }
