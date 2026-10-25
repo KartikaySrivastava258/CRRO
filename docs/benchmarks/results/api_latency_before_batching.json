@@ -1,0 +1,82 @@
+{
+ "environment": {
+  "timestamp_utc": "2026-10-25T21:43:46Z",
+  "git_commit": "8a57ab3",
+  "git_dirty": true,
+  "python": "3.12.3",
+  "os": "Linux-6.18.44-fc-v153-x86_64-with-glibc2.39",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+  "cpu_count": 1,
+  "numpy": "2.4.4",
+  "pandas": "3.0.2",
+  "sklearn": "1.8.0",
+  "scipy": "1.17.1",
+  "ortools": "not installed"
+ },
+ "server": "scripts/serve.py (stdlib ThreadingHTTPServer), SQLite WAL file",
+ "client": "Python urllib, ThreadPoolExecutor(8), same host",
+ "label": "local, single host, not production",
+ "rate_limits": "relaxed via CRRO_RATE_LIMIT_SCALE=100000 so the workload, not the limiter, is measured",
+ "results": [
+  {
+   "scenario": "GET /v1/overview",
+   "n": 600,
+   "concurrency": 8,
+   "warmup": 50,
+   "p50_ms": 12.35,
+   "p95_ms": 19.51,
+   "p99_ms": 23.7,
+   "max_ms": 27.49,
+   "throughput_rps": 623.6,
+   "status_codes": {
+    "200": 600
+   },
+   "valid": true
+  },
+  {
+   "scenario": "POST /v1/events/payment-failed (decide + dispatch, unique keys)",
+   "n": 600,
+   "concurrency": 8,
+   "warmup": 50,
+   "p50_ms": 443.62,
+   "p95_ms": 1190.02,
+   "p99_ms": 2007.86,
+   "max_ms": 3475.88,
+   "throughput_rps": 14.6,
+   "status_codes": {
+    "201": 600
+   },
+   "valid": true
+  },
+  {
+   "scenario": "POST /v1/events/payment-failed (idempotent replay, same key)",
+   "n": 600,
+   "concurrency": 8,
+   "warmup": 50,
+   "p50_ms": 17.9,
+   "p95_ms": 27.71,
+   "p99_ms": 34.22,
+   "max_ms": 1027.8,
+   "throughput_rps": 392.7,
+   "status_codes": {
+    "201": 600
+   },
+   "valid": true
+  },
+  {
+   "scenario": "GET /v1/cases?limit=25",
+   "n": 600,
+   "concurrency": 8,
+   "warmup": 50,
+   "p50_ms": 14.49,
+   "p95_ms": 21.91,
+   "p99_ms": 25.79,
+   "max_ms": 30.22,
+   "throughput_rps": 531.4,
+   "status_codes": {
+    "200": 600
+   },
+   "valid": true
+  }
+ ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "crro-dashboard",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "CRRO operator console (React, no UI framework dependencies)",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --watch",
+    "test:e2e": "node tests/e2e.mjs"
+  },
+  "dependencies": {
+    "react": "19.2.5",
+    "react-dom": "19.2.5"
+  },
+  "devDependencies": {
+    "esbuild": "0.27.7",
+    "playwright": "1.56.0"
+  }
+}
